@@ -315,7 +315,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &150535870
 MonoBehaviour:
@@ -1661,6 +1661,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Cloud2026.Runtime::Cloud2026.Core.GameBootstrap
   authService: {fileID: 1775240480}
   cloudCodeService: {fileID: 1775240479}
+  turnMatchService: {fileID: 0}
   persistAcrossScenes: 1
   autoLoginAnonymous: 1
 --- !u!114 &1775240479
@@ -1877,7 +1878,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.5}
+  m_AnchoredPosition: {x: 0, y: -0.4999981}
   m_SizeDelta: {x: -20, y: -13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2029013092
