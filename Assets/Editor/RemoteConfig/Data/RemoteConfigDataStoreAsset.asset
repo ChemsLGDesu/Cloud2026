@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: Unity.RemoteConfig.Editor::Unity.RemoteConfig.Editor.RemoteConfigDataStore
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a6788b25-6d0a-47e1-8383-7eea294c322e\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"975b1eee-8db7-4506-a287-8b26e4cd7576\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"vida_base\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 100\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"a813d736-78f8-4673-ab49-ecbe5762972f\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"8d5d4ed1-42d2-41a0-9991-f7347d8304dd\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ataque_base\",\r\n      \"type\": \"int\",\r\n      \"value\": 10\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"dd815b00-ce8f-478b-a06f-a318867108bd\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"62c70234-9835-409f-9f91-23149898512b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"defensa_base\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 5\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"7580512c-1613-4b9f-8382-8ef735aa75c4\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"0295219f-c35e-4fe9-9b4b-9859632cc92e\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"multiplicador_dificultad\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"d5c9165f-0ddf-4c33-9204-6f271c2bb7ff\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"9b1dd3be-2ad7-4b8d-ae9c-c441781a740f\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"tabla_heroes\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": {\r\n        \"heroes\": [\r\n          {\r\n           
     \"id\": \"guerrero\",\r\n            \"vida\": 140,\r\n            \"ataque\":
@@ -32,19 +32,53 @@ MonoBehaviour:
     90,\r\n            \"ataque\": 17,\r\n            \"defensa\": 4,\r\n           
     \"velocidad\": 9\r\n          },\r\n          {\r\n            \"id\": \"mago\",\r\n           
     \"vida\": 80,\r\n            \"ataque\": 21,\r\n            \"defensa\": 3,\r\n           
-    \"velocidad\": 7\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a6788b25-6d0a-47e1-8383-7eea294c322e\"\r\n   
+    \"velocidad\": 7\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ce9e4a65-e899-413a-b422-42f8fece52f5\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"catalogo_economia\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"version\":
+    1,\r\n        \"monedas\": [\r\n          {\r\n            \"id\": \"ORO\",\r\n           
+    \"nombre\": \"Oro\",\r\n            \"tipo\": \"blanda\",\r\n            \"inicial\":
+    500,\r\n            \"tope\": 999999\r\n          },\r\n          {\r\n           
+    \"id\": \"GEMAS\",\r\n            \"nombre\": \"Gemas\",\r\n            \"tipo\":
+    \"dura\",\r\n            \"inicial\": 10,\r\n            \"tope\": 999999\r\n         
+    }\r\n        ],\r\n        \"items\": [\r\n          {\r\n            \"id\":
+    \"HEROE_GUERRERO\",\r\n            \"nombre\": \"Guerrero\",\r\n            \"rareza\":
+    \"comun\",\r\n            \"apilable\": false\r\n          },\r\n          {\r\n           
+    \"id\": \"HEROE_ARQUERA\",\r\n            \"nombre\": \"Arquera\",\r\n           
+    \"rareza\": \"comun\",\r\n            \"apilable\": false\r\n          },\r\n         
+    {\r\n            \"id\": \"HEROE_MAGO\",\r\n            \"nombre\": \"Mago\",\r\n           
+    \"rareza\": \"raro\",\r\n            \"apilable\": false\r\n          },\r\n         
+    {\r\n            \"id\": \"HEROE_SANADORA\",\r\n            \"nombre\": \"Sanadora\",\r\n           
+    \"rareza\": \"raro\",\r\n            \"apilable\": false\r\n          },\r\n         
+    {\r\n            \"id\": \"HEROE_COLOSO\",\r\n            \"nombre\": \"Coloso\",\r\n           
+    \"rareza\": \"epico\",\r\n            \"apilable\": false\r\n          },\r\n         
+    {\r\n            \"id\": \"CAJA_BASICA\",\r\n            \"nombre\": \"Caja b\xE1sica\",\r\n           
+    \"rareza\": \"comun\",\r\n            \"apilable\": true\r\n          }\r\n       
+    ],\r\n        \"compras\": [\r\n          {\r\n            \"id\": \"COMPRA_GUERRERO\",\r\n           
+    \"cuestaMoneda\": \"ORO\",\r\n            \"cuestaCantidad\": 500,\r\n           
+    \"entregaItem\": \"HEROE_GUERRERO\",\r\n            \"entregaCantidad\": 1\r\n         
+    },\r\n          {\r\n            \"id\": \"COMPRA_MAGO\",\r\n            \"cuestaMoneda\":
+    \"ORO\",\r\n            \"cuestaCantidad\": 1200,\r\n            \"entregaItem\":
+    \"HEROE_MAGO\",\r\n            \"entregaCantidad\": 1\r\n          },\r\n         
+    {\r\n            \"id\": \"COMPRA_COLOSO\",\r\n            \"cuestaMoneda\":
+    \"GEMAS\",\r\n            \"cuestaCantidad\": 40,\r\n            \"entregaItem\":
+    \"HEROE_COLOSO\",\r\n            \"entregaCantidad\": 1\r\n          },\r\n         
+    {\r\n            \"id\": \"COMPRA_CAJA_BASICA\",\r\n            \"cuestaMoneda\":
+    \"ORO\",\r\n            \"cuestaCantidad\": 100,\r\n            \"entregaItem\":
+    \"CAJA_BASICA\",\r\n            \"entregaCantidad\": 1\r\n          }\r\n       
+    ]\r\n      }\r\n    }\r\n  }\r\n]"
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"975b1eee-8db7-4506-a287-8b26e4cd7576\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"vida_base\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 100\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"a813d736-78f8-4673-ab49-ecbe5762972f\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"8d5d4ed1-42d2-41a0-9991-f7347d8304dd\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ataque_base\",\r\n      \"type\": \"int\",\r\n      \"value\": 10\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"dd815b00-ce8f-478b-a06f-a318867108bd\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"62c70234-9835-409f-9f91-23149898512b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"defensa_base\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 5\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"7580512c-1613-4b9f-8382-8ef735aa75c4\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"0295219f-c35e-4fe9-9b4b-9859632cc92e\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"multiplicador_dificultad\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"d5c9165f-0ddf-4c33-9204-6f271c2bb7ff\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"9b1dd3be-2ad7-4b8d-ae9c-c441781a740f\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"tabla_heroes\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": {\r\n        \"heroes\": [\r\n          {\r\n           
     \"id\": \"guerrero\",\r\n            \"vida\": 140,\r\n            \"ataque\":
@@ -53,7 +87,41 @@ MonoBehaviour:
     90,\r\n            \"ataque\": 17,\r\n            \"defensa\": 4,\r\n           
     \"velocidad\": 9\r\n          },\r\n          {\r\n            \"id\": \"mago\",\r\n           
     \"vida\": 80,\r\n            \"ataque\": 21,\r\n            \"defensa\": 3,\r\n           
-    \"velocidad\": 7\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  }\r\n]"
+    \"velocidad\": 7\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ce9e4a65-e899-413a-b422-42f8fece52f5\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"catalogo_economia\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"version\":
+    1,\r\n        \"monedas\": [\r\n          {\r\n            \"id\": \"ORO\",\r\n           
+    \"nombre\": \"Oro\",\r\n            \"tipo\": \"blanda\",\r\n            \"inicial\":
+    500,\r\n            \"tope\": 999999\r\n          },\r\n          {\r\n           
+    \"id\": \"GEMAS\",\r\n            \"nombre\": \"Gemas\",\r\n            \"tipo\":
+    \"dura\",\r\n            \"inicial\": 10,\r\n            \"tope\": 999999\r\n         
+    }\r\n        ],\r\n        \"items\": [\r\n          {\r\n            \"id\":
+    \"HEROE_GUERRERO\",\r\n            \"nombre\": \"Guerrero\",\r\n            \"rareza\":
+    \"comun\",\r\n            \"apilable\": false\r\n          },\r\n          {\r\n           
+    \"id\": \"HEROE_ARQUERA\",\r\n            \"nombre\": \"Arquera\",\r\n           
+    \"rareza\": \"comun\",\r\n            \"apilable\": false\r\n          },\r\n         
+    {\r\n            \"id\": \"HEROE_MAGO\",\r\n            \"nombre\": \"Mago\",\r\n           
+    \"rareza\": \"raro\",\r\n            \"apilable\": false\r\n          },\r\n         
+    {\r\n            \"id\": \"HEROE_SANADORA\",\r\n            \"nombre\": \"Sanadora\",\r\n           
+    \"rareza\": \"raro\",\r\n            \"apilable\": false\r\n          },\r\n         
+    {\r\n            \"id\": \"HEROE_COLOSO\",\r\n            \"nombre\": \"Coloso\",\r\n           
+    \"rareza\": \"epico\",\r\n            \"apilable\": false\r\n          },\r\n         
+    {\r\n            \"id\": \"CAJA_BASICA\",\r\n            \"nombre\": \"Caja b\xE1sica\",\r\n           
+    \"rareza\": \"comun\",\r\n            \"apilable\": true\r\n          }\r\n       
+    ],\r\n        \"compras\": [\r\n          {\r\n            \"id\": \"COMPRA_GUERRERO\",\r\n           
+    \"cuestaMoneda\": \"ORO\",\r\n            \"cuestaCantidad\": 500,\r\n           
+    \"entregaItem\": \"HEROE_GUERRERO\",\r\n            \"entregaCantidad\": 1\r\n         
+    },\r\n          {\r\n            \"id\": \"COMPRA_MAGO\",\r\n            \"cuestaMoneda\":
+    \"ORO\",\r\n            \"cuestaCantidad\": 1200,\r\n            \"entregaItem\":
+    \"HEROE_MAGO\",\r\n            \"entregaCantidad\": 1\r\n          },\r\n         
+    {\r\n            \"id\": \"COMPRA_COLOSO\",\r\n            \"cuestaMoneda\":
+    \"GEMAS\",\r\n            \"cuestaCantidad\": 40,\r\n            \"entregaItem\":
+    \"HEROE_COLOSO\",\r\n            \"entregaCantidad\": 1\r\n          },\r\n         
+    {\r\n            \"id\": \"COMPRA_CAJA_BASICA\",\r\n            \"cuestaMoneda\":
+    \"ORO\",\r\n            \"cuestaCantidad\": 100,\r\n            \"entregaItem\":
+    \"CAJA_BASICA\",\r\n            \"entregaCantidad\": 1\r\n          }\r\n       
+    ]\r\n      }\r\n    }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"597f6eff-e58f-4036-9ed6-cab604be41d0\",\r\n   
     \"name\": \"production\",\r\n    \"id\": \"860143b0-70e4-47ee-ab89-e96b56339e62\",\r\n   
     \"isDefault\": true,\r\n    \"createdAt\": \"2026-09-01T21:55:43Z\",\r\n    \"updatedAt\":
