@@ -12091,8 +12091,8 @@ MonoBehaviour:
   turnMatchService: {fileID: 1897824344}
   cloudSaveService: {fileID: 1897824343}
   persistAcrossScenes: 1
-  economiaService: {fileID: 0}
-  remoteConfigService: {fileID: 0}
+  economiaService: {fileID: 1897824349}
+  remoteConfigService: {fileID: 1897824348}
   autoLoginAnonymous: 1
 --- !u!114 &1897824343
 MonoBehaviour:
