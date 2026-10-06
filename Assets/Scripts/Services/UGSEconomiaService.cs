@@ -118,11 +118,11 @@ namespace Cloud2026.Services
                 Inventario.objetos.Add(compra.entregaItem);
 
             // 4. Guardar en Cloud Save usando UNA SOLA llamada con ambos cerrojos (Write Locks) (Paso 7)
-            var datosGuardar = new Dictionary<string, object>
-    {
-        { "saldos", new SaveItem(Saldos, Cerrojos.ContainsKey("saldos") ? Cerrojos["saldos"] : null) },
-        { "inventario", new SaveItem(Inventario, Cerrojos.ContainsKey("inventario") ? Cerrojos["inventario"] : null) }
-    };
+            var datosGuardar = new Dictionary<string, SaveItem>
+            {
+                { "saldos", new SaveItem(Saldos, Cerrojos.ContainsKey("saldos") ? Cerrojos["saldos"] : null) },
+                { "inventario", new SaveItem(Inventario, Cerrojos.ContainsKey("inventario") ? Cerrojos["inventario"] : null) }
+            };
 
             try
             {
@@ -145,11 +145,13 @@ namespace Cloud2026.Services
         }
         public void ComprarGuerrero()
         {
+            Debug.Log("Botón Guerrero presionado. Intentando compra...");
             _ = RealizarCompra("COMPRA_GUERRERO");
         }
 
         public void ComprarCajaBasica()
         {
+            Debug.Log("Botón Caja Básica presionado. Intentando compra...");
             _ = RealizarCompra("COMPRA_CAJA_BASICA");
         }
 
