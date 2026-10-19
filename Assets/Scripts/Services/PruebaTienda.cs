@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Services.CloudCode;
 using UnityEngine.InputSystem;
 using System.Threading.Tasks;
+using System.Collections.Generic; // IMPORTANTE: Librería necesaria para el Dictionary
 
 public class PruebaTienda : MonoBehaviour
 {
@@ -9,9 +10,9 @@ public class PruebaTienda : MonoBehaviour
 
     void Start()
     {
-        // Creamos la acción vinculada a la barra espaciadora y nos suscribimos al evento
+        // Actualizamos la barra espaciadora para que llame a la nueva función
         accionEspacio = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/space");
-        accionEspacio.performed += ctx => LlamarServidor();
+        accionEspacio.performed += ctx => ComprarGuerrero();
         accionEspacio.Enable();
     }
 
@@ -25,19 +26,29 @@ public class PruebaTienda : MonoBehaviour
         }
     }
 
-    private async void LlamarServidor()
+    // Nueva función para comprar el guerrero desde el botón o el teclado
+    public async void ComprarGuerrero()
     {
         try
         {
-            Debug.Log("Llamando al módulo Tienda en Unity Cloud...");
+            Debug.Log("Llamando a la Frontera de Confianza (ComprarHeroe)...");
 
-            string respuesta = await CloudCodeService.Instance.CallModuleEndpointAsync<string>("Tienda", "HoraDelServidor", null);
+            // CORRECCIÓN: Usamos Dictionary<string, object> tal como exige Unity
+            var argumentosCompra = new Dictionary<string, object>
+            {
+                { "idCompra", "COMPRA_GUERRERO" },
+                { "idOperacion", System.Guid.NewGuid().ToString() } // Genera un ID único para la transacción
+            };
 
-            Debug.Log("<color=green>¡El circuito está cerrado!</color> Respuesta: " + respuesta);
+            // Llamamos al nuevo módulo que acabamos de subir a la nube
+            string respuesta = await CloudCodeService.Instance.CallModuleEndpointAsync<string>(
+                "Tienda", "ComprarHeroe", argumentosCompra);
+
+            Debug.Log($"<color=green>¡Compra procesada!</color> Respuesta: {respuesta}");
         }
         catch (System.Exception e)
         {
-            Debug.LogError("Error al conectar con Cloud Code: " + e.Message);
+            Debug.LogError($"Error en la compra: {e.Message}");
         }
     }
 }
