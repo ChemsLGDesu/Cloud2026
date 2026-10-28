@@ -35,6 +35,16 @@ public class PruebaTienda : MonoBehaviour
         {
             Debug.Log("Llamando a la Frontera de Confianza (ComprarHeroe)...");
 
+            // --- AQUÍ COLOCAS EL CÓDIGO DE LA TRAMPA 1 ---
+            /*var argumentosCompra = new Dictionary<string, object>
+            {
+                { "idCompra", "COMPRA_GUERRERO" },
+                { "idOperacion", System.Guid.NewGuid().ToString("N") },
+                // --- INTENTO DE TRAMPA ---
+                { "precio", 0 },
+                { "saldo", 999999 },
+                { "playerId", "ID_DE_OTRO_JUGADOR_123" }
+            };*/
             var argumentosCompra = new Dictionary<string, object>
             {
                 { "idCompra", "COMPRA_GUERRERO" },
