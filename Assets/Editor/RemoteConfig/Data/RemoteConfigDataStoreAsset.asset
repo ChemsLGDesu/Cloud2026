@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: Unity.RemoteConfig.Editor::Unity.RemoteConfig.Editor.RemoteConfigDataStore
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"910f1658-4783-4f85-a3ea-d7307bcf031e\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"e8b12d99-42f0-4aae-845a-c71eaf28fafd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"vida_base\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 100\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"3efade4d-c548-42ee-aa40-f0205bb478db\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"65752c6e-7216-4475-ae5d-10b01fd91849\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ataque_base\",\r\n      \"type\": \"int\",\r\n      \"value\": 10\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"545ec806-065c-445e-827b-ba4a4f933dd6\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a49a1b1d-a51c-4be8-9a60-d9f33cab4f51\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"defensa_base\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 5\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"7e0f3656-df5c-4dd6-b976-5a18d0d82600\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"6ed63916-1475-4d09-b70f-6e098140f9cd\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"multiplicador_dificultad\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"00d64d86-83f9-4e96-8de6-b9ce5914b79f\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"e92e3b14-daa5-475d-91ae-d15d11682cbd\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"tabla_heroes\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": {\r\n        \"heroes\": [\r\n          {\r\n           
     \"id\": \"guerrero\",\r\n            \"vida\": 140,\r\n            \"ataque\":
@@ -33,7 +33,7 @@ MonoBehaviour:
     \"velocidad\": 9\r\n          },\r\n          {\r\n            \"id\": \"mago\",\r\n           
     \"vida\": 80,\r\n            \"ataque\": 21,\r\n            \"defensa\": 3,\r\n           
     \"velocidad\": 7\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"d8bcf321-c288-4524-9b4b-0c240be05758\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ff0b20dd-d117-4eb0-a9f4-6e6f94ac3b27\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"catalogo_economia\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"version\":
     1,\r\n        \"monedas\": [\r\n          {\r\n            \"id\": \"ORO\",\r\n           
@@ -67,18 +67,18 @@ MonoBehaviour:
     \"ORO\",\r\n            \"cuestaCantidad\": 100,\r\n            \"entregaItem\":
     \"CAJA_BASICA\",\r\n            \"entregaCantidad\": 1\r\n          }\r\n       
     ]\r\n      }\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"910f1658-4783-4f85-a3ea-d7307bcf031e\"\r\n   
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"e8b12d99-42f0-4aae-845a-c71eaf28fafd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"vida_base\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 100\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"3efade4d-c548-42ee-aa40-f0205bb478db\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"65752c6e-7216-4475-ae5d-10b01fd91849\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ataque_base\",\r\n      \"type\": \"int\",\r\n      \"value\": 10\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"545ec806-065c-445e-827b-ba4a4f933dd6\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a49a1b1d-a51c-4be8-9a60-d9f33cab4f51\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"defensa_base\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 5\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"7e0f3656-df5c-4dd6-b976-5a18d0d82600\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"6ed63916-1475-4d09-b70f-6e098140f9cd\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"multiplicador_dificultad\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"00d64d86-83f9-4e96-8de6-b9ce5914b79f\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"e92e3b14-daa5-475d-91ae-d15d11682cbd\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"tabla_heroes\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": {\r\n        \"heroes\": [\r\n          {\r\n           
     \"id\": \"guerrero\",\r\n            \"vida\": 140,\r\n            \"ataque\":
@@ -88,7 +88,7 @@ MonoBehaviour:
     \"velocidad\": 9\r\n          },\r\n          {\r\n            \"id\": \"mago\",\r\n           
     \"vida\": 80,\r\n            \"ataque\": 21,\r\n            \"defensa\": 3,\r\n           
     \"velocidad\": 7\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"d8bcf321-c288-4524-9b4b-0c240be05758\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ff0b20dd-d117-4eb0-a9f4-6e6f94ac3b27\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"catalogo_economia\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"version\":
     1,\r\n        \"monedas\": [\r\n          {\r\n            \"id\": \"ORO\",\r\n           
