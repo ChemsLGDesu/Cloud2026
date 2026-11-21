@@ -1,0 +1,10 @@
+{
+  "indexConfig": {
+    "fields": [
+      {
+        "key": "nivel",
+        "asc": true
+      }
+    ]
+  }
+}

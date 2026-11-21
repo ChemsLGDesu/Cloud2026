@@ -9470,8 +9470,10 @@ GameObject:
   - component: {fileID: 1552273080}
   - component: {fileID: 1552273082}
   - component: {fileID: 1552273081}
+  - component: {fileID: 1552273084}
+  - component: {fileID: 1552273083}
   m_Layer: 0
-  m_Name: Lab08_Tester
+  m_Name: Laboratorios_Tester
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9499,7 +9501,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1552273079}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c838a00c6482b743b09db798123c441, type: 3}
   m_Name: 
@@ -9517,6 +9519,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89adb9956f969bf4484c211d093e3703, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Cloud2026.Runtime::ReproductorCombate
+--- !u!114 &1552273083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552273079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7f58886955a8c94c86c41c5af82ab47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cloud2026.Runtime::VerificadorLab09
+  rivalesCliente: {fileID: 0}
+  reproductor: {fileID: 0}
+--- !u!114 &1552273084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552273079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8407f510cfe73ad4793d38caa70042a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cloud2026.Runtime::RivalesCliente
 --- !u!1 &1585593300
 GameObject:
   m_ObjectHideFlags: 0

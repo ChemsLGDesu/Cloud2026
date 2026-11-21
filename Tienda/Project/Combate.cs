@@ -120,15 +120,76 @@ namespace Tienda
         {
             var playerId = context.PlayerId;
 
+            if (string.IsNullOrWhiteSpace(idRival))
+                return Rechazo("Debes indicar un rival válido.");
+
+            if (idRival == playerId)
+                return Rechazo("No puedes pelear contra tu propia defensa.");
+
             if (equipo == null || equipo.Count == 0 || equipo.Count > MaxHeroesPorEquipo)
-                return Rechazo($"El equipo lleva entre 1 y 3 hÃƒÂ©roes (mandaste {equipo?.Count ?? 0}).");
+                return Rechazo($"El equipo lleva entre 1 y 3 héroes (mandaste {equipo?.Count ?? 0}).");
 
             var (tablaHeroes, rivales) = await LeerConfiguracionAsync(context, gameApiClient);
 
-            var rivalConfig = rivales.Rivales.FirstOrDefault(r => r.Id == idRival);
-            if (rivalConfig == null)
-                return Rechazo($"No hay ningÃƒÂºn rival Ã‚Â«{idRival}Ã‚Â».");
+            // Determinar si idRival es un NPC de tabla o un PlayerId real
+            var npcConfig = rivales.Rivales.FirstOrDefault(r => r.Id == idRival && r.Id != "pvp");
+            string nombreRival;
+            string premioMoneda;
+            int premioCantidad;
+            int trofeosPremio;
+            List<UnidadCombate> enemigo;
 
+            if (npcConfig != null)
+            {
+                nombreRival = npcConfig.Nombre;
+                premioMoneda = npcConfig.PremioMoneda;
+                premioCantidad = npcConfig.PremioCantidad;
+                trofeosPremio = npcConfig.Trofeos;
+                enemigo = ArmarEquipoRival(npcConfig.Equipo, tablaHeroes);
+                if (enemigo.Count == 0)
+                    return Rechazo($"El equipo del rival «{idRival}» no tiene unidades válidas.");
+            }
+            else
+            {
+                // Rival real: leer su defensa PÚBLICA y validar contra su inventario PROTEGIDO
+                var respDef = await gameApiClient.CloudSaveData.GetPublicItemsAsync(
+                    context, context.ServiceToken, context.ProjectId, idRival, new List<string> { "defensa" }, null);
+
+                var itemDef = respDef.Data?.Results?.FirstOrDefault(r => r.Key == "defensa");
+                if (itemDef?.Value == null)
+                    return Rechazo($"No hay ningún rival «{idRival}».");
+
+                var defensa = ModuloRivales.ParsearDefensaPublica(itemDef.Value.ToString());
+                if (defensa == null)
+                    return Rechazo($"No hay ningún rival «{idRival}».");
+
+                nombreRival = string.IsNullOrWhiteSpace(defensa.nombre) ? idRival : defensa.nombre;
+
+                if (defensa.equipo == null || defensa.equipo.Count == 0)
+                    return Rechazo($"«{nombreRival}» tiene la defensa vacía: no se puede atacar.");
+
+                if (defensa.equipo.Count > MaxHeroesPorEquipo)
+                    return Rechazo($"La defensa de «{nombreRival}» excede el límite de {MaxHeroesPorEquipo} héroes.");
+
+                var respInvRival = await gameApiClient.CloudSaveData.GetProtectedItemsAsync(
+                    context, context.ServiceToken, context.ProjectId, idRival, new List<string> { "inventario" }, null);
+
+                var invRival = new List<string>();
+                var itemInvRival = respInvRival.Data?.Results?.FirstOrDefault(r => r.Key == "inventario");
+                if (itemInvRival?.Value != null)
+                    invRival = JsonSerializer.Deserialize<List<string>>(itemInvRival.Value.ToString()) ?? new List<string>();
+
+                enemigo = ArmarEquipoPropio(defensa.equipo, invRival, tablaHeroes, out string heroAjeno);
+                if (enemigo == null)
+                    return Rechazo($"La defensa de «{nombreRival}» declara «{heroAjeno}», que no está en su inventario.");
+
+                var pvpConfig = rivales.Rivales.FirstOrDefault(r => r.Id == "pvp");
+                premioMoneda = pvpConfig?.PremioMoneda ?? "ORO";
+                premioCantidad = pvpConfig?.PremioCantidad ?? 200;
+                trofeosPremio = pvpConfig?.Trofeos ?? 10;
+            }
+
+            // Leer estado protegido del atacante
             var keys = new List<string> { "ORO", "inventario", "progreso", "ultimo_combate" };
             var respProtected = await gameApiClient.CloudSaveData.GetProtectedItemsAsync(
                 context, context.ServiceToken, context.ProjectId, playerId, keys, null);
@@ -168,22 +229,18 @@ namespace Tienda
 
             var propio = ArmarEquipoPropio(equipo, inventario, tablaHeroes, out string faltante);
             if (propio == null)
-                return Rechazo($"Ã‚Â«{faltante}Ã‚Â» no estÃƒÂ¡ en tu inventario o no existe en la tabla de hÃƒÂ©roes.");
-
-            var enemigo = ArmarEquipoRival(rivalConfig.Equipo, tablaHeroes);
-            if (enemigo.Count == 0)
-                return Rechazo($"El equipo del rival Ã‚Â«{idRival}Ã‚Â» no tiene unidades vÃƒÂ¡lidas.");
+                return Rechazo($"«{faltante}» no está en tu inventario o no existe en la tabla de héroes.");
 
             int semilla = Random.Shared.Next(1, int.MaxValue);
             var resultado = Simular(propio, enemigo, semilla);
             resultado.Exito = true;
-            resultado.Rival = rivalConfig.Nombre;
+            resultado.Rival = nombreRival;
             resultado.Mensaje = resultado.Victoria
-                ? $"Victoria contra Ã‚Â«{rivalConfig.Nombre}Ã‚Â» en {resultado.TurnosJugados} turnos."
-                : $"Derrota contra Ã‚Â«{rivalConfig.Nombre}Ã‚Â» en {resultado.TurnosJugados} turnos.";
+                ? $"Victoria contra «{nombreRival}» en {resultado.TurnosJugados} turnos."
+                : $"Derrota contra «{nombreRival}» en {resultado.TurnosJugados} turnos.";
 
-            int premioGanado = resultado.Victoria ? rivalConfig.PremioCantidad : 0;
-            int cambioTrofeos = resultado.Victoria ? rivalConfig.Trofeos : -(rivalConfig.Trofeos / 2);
+            int premioGanado = resultado.Victoria ? premioCantidad : 0;
+            int cambioTrofeos = resultado.Victoria ? trofeosPremio : -(trofeosPremio / 2);
 
             saldoActual += premioGanado;
             if (resultado.Victoria)
@@ -193,14 +250,14 @@ namespace Tienda
 
             progreso.trofeos = Math.Max(0, progreso.trofeos + cambioTrofeos);
 
-            resultado.Recompensa = new RecompensaCombate { moneda = rivalConfig.PremioMoneda, cantidad = premioGanado };
+            resultado.Recompensa = new RecompensaCombate { moneda = premioMoneda, cantidad = premioGanado };
             resultado.TrofeosCambio = cambioTrofeos;
             resultado.SaldoResultante = saldoActual;
 
             var ultimo = new UltimoCombate
             {
                 semilla = semilla,
-                rival = rivalConfig.Nombre,
+                rival = nombreRival,
                 victoria = resultado.Victoria,
                 fechaUtc = DateTime.UtcNow.ToString("o"),
                 equipoPropio = propio.Select(u => u.Clonar()).ToList(),
@@ -211,7 +268,7 @@ namespace Tienda
             {
                 var cuerpo = new SetItemBatchBody(new List<SetItemBody>
                 {
-                    new SetItemBody(rivalConfig.PremioMoneda, saldoActual, lockOro),
+                    new SetItemBody(premioMoneda, saldoActual, lockOro),
                     new SetItemBody("progreso", progreso, lockProgreso),
                     new SetItemBody("ultimo_combate", ultimo, lockUltimo)
                 });
@@ -238,7 +295,7 @@ namespace Tienda
 
             var item = resp.Data?.Results?.FirstOrDefault(r => r.Key == "ultimo_combate");
             if (item?.Value == null)
-                return Rechazo("No tienes ningÃƒÂºn combate previo registrado para repetir.");
+                return Rechazo("No tienes ningún combate previo registrado para repetir.");
 
             var ultimo = JsonSerializer.Deserialize<UltimoCombate>(item.Value.ToString(),
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -247,7 +304,7 @@ namespace Tienda
             resultado.Exito = true;
             resultado.Repeticion = true;
             resultado.Rival = ultimo.rival;
-            resultado.Mensaje = "RepeticiÃƒÂ³n determinista del ÃƒÂºltimo combate (sin premio ni escritura).";
+            resultado.Mensaje = "Repetición determinista del último combate (sin premio ni escritura).";
             return resultado;
         }
 
@@ -385,7 +442,7 @@ namespace Tienda
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning($"Usando rivales por defecto por formato inesperado en Remote Config: {ex.Message}");
+                        _logger.LogWarning($"Usando rivales por defecto: {ex.Message}");
                     }
                 }
 
@@ -413,20 +470,22 @@ namespace Tienda
             return (tabla, rivales);
         }
 
+        private Dictionary<string, UnidadCombate> ObtenerTablaDefault() => new Dictionary<string, UnidadCombate>
+        {
+            ["HEROE_GUERRERO"] = new UnidadCombate { Id = "HEROE_GUERRERO", Vida = 140, Ataque = 12, Defensa = 9, Velocidad = 8 },
+            ["HEROE_ARQUERA"]  = new UnidadCombate { Id = "HEROE_ARQUERA",  Vida = 90,  Ataque = 17, Defensa = 4, Velocidad = 14 },
+            ["HEROE_MAGO"]     = new UnidadCombate { Id = "HEROE_MAGO",     Vida = 80,  Ataque = 22, Defensa = 3, Velocidad = 11 }
+        };
+
         private TablaRivales ObtenerRivalesDefault() => new TablaRivales
         {
             Rivales = new List<RivalNpc>
             {
                 new RivalNpc { Id = "bandidos", Nombre = "Bandidos del camino", Equipo = new List<string> { "HEROE_ARQUERA" }, PremioMoneda = "ORO", PremioCantidad = 150, Trofeos = 5 },
                 new RivalNpc { Id = "cazadores", Nombre = "Cazadores furtivos", Equipo = new List<string> { "HEROE_GUERRERO", "HEROE_ARQUERA" }, PremioMoneda = "ORO", PremioCantidad = 300, Trofeos = 8 },
-                new RivalNpc { Id = "guardia_real", Nombre = "Guardia real", Equipo = new List<string> { "HEROE_GUERRERO", "HEROE_MAGO", "HEROE_ARQUERA" }, PremioMoneda = "ORO", PremioCantidad = 600, Trofeos = 10 }
+                new RivalNpc { Id = "guardia_real", Nombre = "Guardia real", Equipo = new List<string> { "HEROE_GUERRERO", "HEROE_MAGO", "HEROE_ARQUERA" }, PremioMoneda = "ORO", PremioCantidad = 600, Trofeos = 10 },
+                new RivalNpc { Id = "pvp", Nombre = "Duelo PvP Asíncrono", Equipo = new List<string>(), PremioMoneda = "ORO", PremioCantidad = 200, Trofeos = 10 }
             }
-        };
-        private Dictionary<string, UnidadCombate> ObtenerTablaDefault() => new Dictionary<string, UnidadCombate>
-        {
-            ["HEROE_GUERRERO"] = new UnidadCombate { Id = "HEROE_GUERRERO", Vida = 140, Ataque = 12, Defensa = 9, Velocidad = 8 },
-            ["HEROE_ARQUERA"]  = new UnidadCombate { Id = "HEROE_ARQUERA",  Vida = 90,  Ataque = 17, Defensa = 4, Velocidad = 14 },
-            ["HEROE_MAGO"]     = new UnidadCombate { Id = "HEROE_MAGO",     Vida = 80,  Ataque = 22, Defensa = 3, Velocidad = 11 }
         };
     }
 }

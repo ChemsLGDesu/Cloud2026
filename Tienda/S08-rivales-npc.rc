@@ -26,6 +26,14 @@
           "premioMoneda": "ORO",
           "premioCantidad": 600,
           "trofeos": 10
+        },
+        {
+          "id": "pvp",
+          "nombre": "Duelo PvP Asíncrono",
+          "equipo": [],
+          "premioMoneda": "ORO",
+          "premioCantidad": 200,
+          "trofeos": 10
         }
       ]
     }
