@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ugs-config-schemas.unity3d.com/v1/remote-config.schema.json",
+  "entries": {
+    "temporada": {
+      "nombre": "Temporada 1",
+      "tabla": "trofeos_dvsc",
+      "premios": {
+        "Oro": "Corona de oro (+20 GEMAS)",
+        "Plata": "Medalla de plata (+10 GEMAS)",
+        "Bronce": "Insignia de bronce (+5 GEMAS)"
+      }
+    }
+  }
+}

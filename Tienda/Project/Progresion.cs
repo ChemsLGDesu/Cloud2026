@@ -153,7 +153,7 @@ namespace Tienda
                 return "El nodo solicitado no existe.";
 
             if (desbloqueados.Contains(nodo.Id))
-                return $"«{nodo.Nombre}» ya está desbloqueado.";
+                return $"Â«{nodo.Nombre}Â» ya estÃ¡ desbloqueado.";
 
             var faltantes = nodo.Requiere.Where(r => !desbloqueados.Contains(r)).ToList();
             if (faltantes.Count > 0)
@@ -167,6 +167,11 @@ namespace Tienda
 
             return null;
         }
+
+        public static int CambioDeTrofeos(int trofeosActuales, bool victoria, int trofeosDelRival) =>
+            victoria
+                ? trofeosDelRival
+                : -Math.Min(Math.Max(0, trofeosActuales), trofeosDelRival / 2);
     }
 
     public partial class ModuloCombate
@@ -183,7 +188,7 @@ namespace Tienda
             var (_, _, cfgProg) = await LeerConfiguracionAsync(context, gameApiClient);
             var nodo = cfgProg.Nodos.FirstOrDefault(n => n.Id == idNodo);
             if (nodo == null)
-                return new ResultadoNodo { Exito = false, NodoId = idNodo, Mensaje = $"«{idNodo}» no es un nodo de progresión." };
+                return new ResultadoNodo { Exito = false, NodoId = idNodo, Mensaje = $"Â«{idNodo}Â» no es un nodo de progresiÃ³n." };
 
             var estado = await ModuloTienda.LeerEstadoCompletoAsync(context, gameApiClient, context.PlayerId);
             int saldoMoneda = estado.Saldos.De(nodo.CuestaMoneda);
@@ -222,7 +227,7 @@ namespace Tienda
             {
                 Exito = true,
                 NodoId = nodo.Id,
-                Mensaje = $"HECHO: Desbloqueaste «{nodo.Nombre}» por {nodo.CuestaCantidad} {nodo.CuestaMoneda}.",
+                Mensaje = $"HECHO: Desbloqueaste Â«{nodo.Nombre}Â» por {nodo.CuestaCantidad} {nodo.CuestaMoneda}.",
                 SaldoResultante = nuevoSaldo,
                 Desbloqueos = estado.Progreso.desbloqueos
             };

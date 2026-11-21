@@ -11,7 +11,8 @@
         "Unity.InputSystem",
         "UnityEngine.UI",
         "Unity.TextMeshPro",
-        "Unity.Services.RemoteConfig"
+        "Unity.Services.RemoteConfig",
+        "Unity.Services.Leaderboards"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

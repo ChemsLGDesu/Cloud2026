@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ugs-config-schemas.unity3d.com/v1/leaderboards.schema.json",
+  "name": "trofeos_dvsc",
+  "sortOrder": "desc",
+  "updateType": "keepLatest",
+  "resetConfig": {
+    "start": "2026-12-01T05:00:00Z",
+    "schedule": "0 0 1 * *",
+    "archive": true
+  },
+  "tieringConfig": {
+    "strategy": "rank",
+    "tiers": [
+      { "id": "Oro", "cutoff": 2 },
+      { "id": "Plata", "cutoff": 9 },
+      { "id": "Bronce" }
+    ]
+  }
+}

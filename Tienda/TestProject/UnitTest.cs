@@ -85,7 +85,7 @@ namespace TestProject
             Assert.That(r.VidaFinalPropio.Count, Is.EqualTo(2));
         }
 
-        // --- 13 PRUEBAS DE PROGRESIÓN (S10) ---
+        // --- 13 PRUEBAS DE PROGRESIÃ“N (S10) ---
 
         [Test]
         public void T08_Experiencia_VictoriaConTurnosBajoTope()
@@ -218,7 +218,7 @@ namespace TestProject
         public void T19_Nodo_RechazaSiYaEstaDesbloqueadoONivelInsuficiente()
         {
             var nodo = new NodoProgresion { Id = "TALENTO_ATAQUE_1", Nombre = "Ataque I", NivelCuentaMinimo = 2, CuestaMoneda = "ORO", CuestaCantidad = 100, Requiere = new List<string>() };
-            Assert.That(ReglasProgresion.PorQueNoSePuede(nodo, new List<string> { "TALENTO_ATAQUE_1" }, 2, 500), Does.Contain("ya está desbloqueado"));
+            Assert.That(ReglasProgresion.PorQueNoSePuede(nodo, new List<string> { "TALENTO_ATAQUE_1" }, 2, 500), Does.Contain("ya estÃ¡ desbloqueado"));
             Assert.That(ReglasProgresion.PorQueNoSePuede(nodo, new List<string>(), 1, 500), Does.Contain("nivel de cuenta 2"));
         }
 
@@ -228,6 +228,31 @@ namespace TestProject
             var nodo = new NodoProgresion { Id = "TALENTO_ATAQUE_2", Nombre = "Ataque II", NivelCuentaMinimo = 2, CuestaMoneda = "ORO", CuestaCantidad = 300, Requiere = new List<string> { "TALENTO_ATAQUE_1" } };
             string motivo = ReglasProgresion.PorQueNoSePuede(nodo, new List<string> { "TALENTO_ATAQUE_1" }, 2, 300);
             Assert.That(motivo, Is.Null);
+        }
+
+        // --- PRUEBAS DE TROFEOS Y SUELO EN CERO (S11) ---
+
+        [Test]
+        public void T21_Trofeos_VictoriaSumaYDerrotaConSueloEnCero()
+        {
+            Assert.That(ReglasProgresion.CambioDeTrofeos(0, true, 5), Is.EqualTo(5));
+            Assert.That(ReglasProgresion.CambioDeTrofeos(5, false, 20), Is.EqualTo(-5));
+            Assert.That(ReglasProgresion.CambioDeTrofeos(0, false, 20), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void T22_Trofeos_DiezMilCombatesAlAzarNuncaBajanDeCero()
+        {
+            var azar = new Random(202611);
+            int trofeos = 0;
+            for (int i = 0; i < 10000; i++)
+            {
+                bool victoria = azar.Next(2) == 0;
+                int pagoRival = azar.Next(1, 30);
+                int delta = ReglasProgresion.CambioDeTrofeos(trofeos, victoria, pagoRival);
+                trofeos += delta;
+                Assert.That(trofeos, Is.GreaterThanOrEqualTo(0));
+            }
         }
     }
 }

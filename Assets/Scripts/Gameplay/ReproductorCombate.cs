@@ -68,6 +68,7 @@ public class ResultadoCombateDto
     public List<EntradaBattleLogDto> BattleLog;
     public RecompensaCombateDto Recompensa;
     public int TrofeosCambio;
+    public int PuestoEnRanking;
     public int SaldoResultante;
     public int XpGanada;
     public int NivelCuenta;
