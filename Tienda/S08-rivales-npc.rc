@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ugs-config-schemas.unity3d.com/v1/remote-config.schema.json",
+  "entries": {
+    "rivales_npc": {
+      "rivales": [
+        {
+          "id": "bandidos",
+          "nombre": "Bandidos del camino",
+          "equipo": [ "HEROE_ARQUERA" ],
+          "premioMoneda": "ORO",
+          "premioCantidad": 150,
+          "trofeos": 5
+        },
+        {
+          "id": "cazadores",
+          "nombre": "Cazadores furtivos",
+          "equipo": [ "HEROE_GUERRERO", "HEROE_ARQUERA" ],
+          "premioMoneda": "ORO",
+          "premioCantidad": 300,
+          "trofeos": 8
+        },
+        {
+          "id": "guardia_real",
+          "nombre": "Guardia real",
+          "equipo": [ "HEROE_GUERRERO", "HEROE_MAGO", "HEROE_ARQUERA" ],
+          "premioMoneda": "ORO",
+          "premioCantidad": 600,
+          "trofeos": 10
+        }
+      ]
+    }
+  }
+}
