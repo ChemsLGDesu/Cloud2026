@@ -62,6 +62,7 @@ namespace Tienda
     {
         public int nivelCuenta { get; set; } = 1;
         public int experiencia { get; set; } = 0;
+        public bool bonoBienvenida { get; set; } = false;
     }
 
     public class ProgresoData
@@ -296,7 +297,7 @@ namespace Tienda
             var playerId = context.PlayerId;
             var catalogo = await LeerCatalogoAsync(context, gameApiClient);
             var compra = catalogo.Compras.FirstOrDefault(c => c.Id == idCompra);
-            if (compra == null) return Rechazo($"El item {idCompra} no existe en el catÃ¡logo.");
+            if (compra == null) return Rechazo($"El item {idCompra} no existe en el catálogo.");
 
             var estado = await LeerEstadoCompletoAsync(context, gameApiClient, playerId);
 
@@ -312,10 +313,15 @@ namespace Tienda
                 };
             }
 
-            if (estado.Saldos.De(compra.CuestaMoneda) < compra.CuestaCantidad)
-                return Rechazo($"Te faltan {compra.CuestaCantidad} {compra.CuestaMoneda} para esta compra.");
+            var (campana, _) = await CampanasEvento.LeerAsync(
+                gameApiClient, context, playerId, CampanasEvento.EsNuevo(estado.Perfil.nivelCuenta));
+            int precioFinal = (int)campana.PrecioConDescuento(compra.EntregaItem, compra.CuestaCantidad);
+            int saldoDisponible = estado.Saldos.De(compra.CuestaMoneda);
 
-            int nuevoSaldo = estado.Saldos.De(compra.CuestaMoneda) - compra.CuestaCantidad;
+            if (saldoDisponible < precioFinal)
+                return Rechazo($"Te faltan {precioFinal - saldoDisponible} {compra.CuestaMoneda} para «{compra.Id}» (tienes {saldoDisponible}, cuesta {precioFinal}).");
+
+            int nuevoSaldo = saldoDisponible - precioFinal;
             estado.Saldos.Poner(compra.CuestaMoneda, nuevoSaldo);
             estado.Inventario.heroes.Add(new HeroeInventario { id = compra.EntregaItem, nivel = 1, experiencia = 0 });
             if (!string.IsNullOrWhiteSpace(idOperacion))

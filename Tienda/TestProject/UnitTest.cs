@@ -254,5 +254,82 @@ namespace TestProject
                 Assert.That(trofeos, Is.GreaterThanOrEqualTo(0));
             }
         }
+
+        [Test]
+        public void T23_Evento_FactorDanoActivoYApagado()
+        {
+            var apagado = new ConfigCampanaEvento { Activo = false, MultiplicadorDano = 1.25 };
+            var activo = new ConfigCampanaEvento { Activo = true, MultiplicadorDano = 1.25 };
+            Assert.That(apagado.FactorDano, Is.EqualTo(1.0));
+            Assert.That(activo.FactorDano, Is.EqualTo(1.25));
+        }
+
+        [Test]
+        public void T24_Evento_PrecioConDescuentoSoloHeroesEspeciales()
+        {
+            var ev = new ConfigCampanaEvento
+            {
+                Activo = true,
+                DescuentoTienda = 0.30,
+                HeroesEspeciales = new List<string> { "HEROE_MAGO" }
+            };
+            Assert.That(ev.PrecioConDescuento("HEROE_MAGO", 1200), Is.EqualTo(840));
+            Assert.That(ev.PrecioConDescuento("HEROE_GUERRERO", 500), Is.EqualTo(500));
+        }
+
+        [Test]
+        public void T25_Evento_PrecioSinEventoDevuelveBase()
+        {
+            var ev = new ConfigCampanaEvento
+            {
+                Activo = false,
+                DescuentoTienda = 0.30,
+                HeroesEspeciales = new List<string> { "HEROE_MAGO" }
+            };
+            Assert.That(ev.PrecioConDescuento("HEROE_MAGO", 1200), Is.EqualTo(1200));
+        }
+
+        [Test]
+        public void T26_Evento_BotinConEventoSumaExclusivoSinTocarBase()
+        {
+            var baseBotin = new ConfigBotin
+            {
+                Tiradas = 1,
+                Premios = new List<PremioBotin> { new PremioBotin { Id = "CAJA_BASICA", Tipo = "objeto", Cantidad = 1, Peso = 40 } }
+            };
+            var ev = new ConfigCampanaEvento
+            {
+                Activo = true,
+                BotinExclusivo = new List<PremioBotin> { new PremioBotin { Id = "EMBLEMA_FESTIVAL", Tipo = "objeto", Cantidad = 1, Peso = 100 } }
+            };
+            var combinado = ev.BotinConEvento(baseBotin);
+            Assert.That(baseBotin.Premios.Count, Is.EqualTo(1));
+            Assert.That(combinado.Premios.Count, Is.EqualTo(2));
+            Assert.That(combinado.Premios[1].Id, Is.EqualTo("EMBLEMA_FESTIVAL"));
+        }
+
+        [Test]
+        public void T27_Evento_BotinApagadoNoIncluyeExclusivo()
+        {
+            var baseBotin = new ConfigBotin
+            {
+                Tiradas = 1,
+                Premios = new List<PremioBotin> { new PremioBotin { Id = "CAJA_BASICA", Tipo = "objeto", Cantidad = 1, Peso = 40 } }
+            };
+            var ev = new ConfigCampanaEvento
+            {
+                Activo = false,
+                BotinExclusivo = new List<PremioBotin> { new PremioBotin { Id = "EMBLEMA_FESTIVAL", Tipo = "objeto", Cantidad = 1, Peso = 100 } }
+            };
+            var combinado = ev.BotinConEvento(baseBotin);
+            Assert.That(combinado.Premios.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void T28_Evento_EsNuevoSoloNivelCuentaMenorOIgualA1()
+        {
+            Assert.That(CampanasEvento.EsNuevo(1), Is.True);
+            Assert.That(CampanasEvento.EsNuevo(2), Is.False);
+        }
     }
 }

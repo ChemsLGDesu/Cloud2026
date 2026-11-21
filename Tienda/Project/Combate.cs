@@ -137,7 +137,7 @@ namespace Tienda
                 sim.Recompensa = ult.recompensa ?? new RecompensaCombate { moneda = "ORO", cantidad = 0 };
                 sim.TrofeosCambio = ult.trofeosCambio;
                 sim.SaldoResultante = estado.Saldos.De("ORO");
-                sim.Mensaje = $"Este combate ya se habÃ­a resuelto: mismo resultado, sin volver a premiar (op {idOperacion.Substring(0, Math.Min(8, idOperacion.Length))}...).";
+                sim.Mensaje = $"Este combate ya se habÃƒÂ­a resuelto: mismo resultado, sin volver a premiar (op {idOperacion.Substring(0, Math.Min(8, idOperacion.Length))}...).";
                 return sim;
             }
 
@@ -148,7 +148,7 @@ namespace Tienda
                 SaldoResultante = estado.Saldos.De("ORO"),
                 NivelCuenta = estado.Perfil.nivelCuenta,
                 ExperienciaCuenta = estado.Perfil.experiencia,
-                Mensaje = "Este combate ya se habÃ­a resuelto anteriormente: sin volver a premiar."
+                Mensaje = "Este combate ya se habÃƒÂ­a resuelto anteriormente: sin volver a premiar."
             };
         }
 
@@ -165,13 +165,13 @@ namespace Tienda
                 idOperacion = Guid.NewGuid().ToString();
 
             if (string.IsNullOrWhiteSpace(idRival))
-                return Rechazo("Debes indicar un rival vÃ¡lido.");
+                return Rechazo("Debes indicar un rival vÃƒÂ¡lido.");
 
             if (idRival == playerId)
                 return Rechazo("No puedes pelear contra tu propia defensa.");
 
             if (equipo == null || equipo.Count == 0 || equipo.Count > MaxHeroesPorEquipo)
-                return Rechazo($"El equipo lleva entre 1 y 3 hÃ©roes (mandaste {equipo?.Count ?? 0}).");
+                return Rechazo($"El equipo lleva entre 1 y 3 hÃƒÂ©roes (mandaste {equipo?.Count ?? 0}).");
 
             var (tablaHeroes, rivales, cfgProg) = await LeerConfiguracionAsync(context, gameApiClient);
             var estado = await ModuloTienda.LeerEstadoCompletoAsync(context, gameApiClient, playerId);
@@ -180,16 +180,16 @@ namespace Tienda
             if (estado.Operaciones.ids.Contains(idOperacion))
                 return RespuestaRepetida(estado, idOperacion);
 
-            // Seleccionar instancias de hÃ©roes del inventario propio y aplicar bono por nivel
+            // Seleccionar instancias de hÃƒÂ©roes del inventario propio y aplicar bono por nivel
             var elegidos = SeleccionarHeroesPropio(equipo, estado.Inventario.heroes, out string faltante);
             if (elegidos == null)
-                return Rechazo($"Â«{faltante}Â» no estÃ¡ en tu inventario.");
+                return Rechazo($"Ã‚Â«{faltante}Ã‚Â» no estÃƒÂ¡ en tu inventario.");
 
             var propio = new List<UnidadCombate>();
             foreach (var h in elegidos)
             {
                 if (!tablaHeroes.TryGetValue(h.id, out var statsBase))
-                    return Rechazo($"Â«{h.id}Â» no existe en la tabla de hÃ©roes.");
+                    return Rechazo($"Ã‚Â«{h.id}Ã‚Â» no existe en la tabla de hÃƒÂ©roes.");
 
                 propio.Add(new UnidadCombate
                 {
@@ -217,7 +217,7 @@ namespace Tienda
                 trofeosPremio = npcConfig.Trofeos;
                 enemigo = ArmarEquipoRival(npcConfig.Equipo, tablaHeroes);
                 if (enemigo.Count == 0)
-                    return Rechazo($"El equipo del rival Â«{idRival}Â» no tiene unidades vÃ¡lidas.");
+                    return Rechazo($"El equipo del rival Ã‚Â«{idRival}Ã‚Â» no tiene unidades vÃƒÂ¡lidas.");
             }
             else
             {
@@ -226,30 +226,30 @@ namespace Tienda
 
                 var itemDef = respDef.Data?.Results?.FirstOrDefault(r => r.Key == "defensa");
                 if (itemDef?.Value == null)
-                    return Rechazo($"No hay ningÃºn rival Â«{idRival}Â».");
+                    return Rechazo($"No hay ningÃƒÂºn rival Ã‚Â«{idRival}Ã‚Â».");
 
                 var defensa = ModuloRivales.ParsearDefensaPublica(itemDef.Value.ToString());
                 if (defensa == null)
-                    return Rechazo($"No hay ningÃºn rival Â«{idRival}Â».");
+                    return Rechazo($"No hay ningÃƒÂºn rival Ã‚Â«{idRival}Ã‚Â».");
 
                 nombreRival = string.IsNullOrWhiteSpace(defensa.nombre) ? idRival : defensa.nombre;
 
                 if (defensa.equipo == null || defensa.equipo.Count == 0)
-                    return Rechazo($"Â«{nombreRival}Â» tiene la defensa vacÃ­a: no se puede atacar.");
+                    return Rechazo($"Ã‚Â«{nombreRival}Ã‚Â» tiene la defensa vacÃƒÂ­a: no se puede atacar.");
 
                 if (defensa.equipo.Count > MaxHeroesPorEquipo)
-                    return Rechazo($"La defensa de Â«{nombreRival}Â» excede el lÃ­mite de {MaxHeroesPorEquipo} hÃ©roes.");
+                    return Rechazo($"La defensa de Ã‚Â«{nombreRival}Ã‚Â» excede el lÃƒÂ­mite de {MaxHeroesPorEquipo} hÃƒÂ©roes.");
 
                 var estadoRival = await ModuloTienda.LeerEstadoCompletoAsync(context, gameApiClient, idRival);
                 var elegidosRival = SeleccionarHeroesPropio(defensa.equipo, estadoRival.Inventario.heroes, out string heroAjeno);
                 if (elegidosRival == null)
-                    return Rechazo($"La defensa de Â«{nombreRival}Â» declara Â«{heroAjeno}Â», que no estÃ¡ en su inventario.");
+                    return Rechazo($"La defensa de Ã‚Â«{nombreRival}Ã‚Â» declara Ã‚Â«{heroAjeno}Ã‚Â», que no estÃƒÂ¡ en su inventario.");
 
                 enemigo = new List<UnidadCombate>();
                 foreach (var hr in elegidosRival)
                 {
                     if (!tablaHeroes.TryGetValue(hr.id, out var stRival))
-                        return Rechazo($"Â«{hr.id}Â» no existe en la tabla de hÃ©roes.");
+                        return Rechazo($"Ã‚Â«{hr.id}Ã‚Â» no existe en la tabla de hÃƒÂ©roes.");
 
                     enemigo.Add(new UnidadCombate
                     {
@@ -266,6 +266,10 @@ namespace Tienda
                 premioCantidad = pvpConfig?.PremioCantidad ?? 200;
                 trofeosPremio = pvpConfig?.Trofeos ?? 10;
             }
+
+            var (campanaEvento, _) = await CampanasEvento.LeerAsync(gameApiClient, context, playerId, CampanasEvento.EsNuevo(estado.Perfil.nivelCuenta));
+            foreach (var unidad in propio)
+                unidad.Ataque = (int)Math.Round(unidad.Ataque * campanaEvento.FactorDano, MidpointRounding.AwayFromZero);
 
             int semilla = Random.Shared.Next(1, int.MaxValue);
             var resultado = Simular(propio, enemigo, semilla);
@@ -310,9 +314,9 @@ namespace Tienda
             resultado.NivelCuenta = nivCuentaNuevo;
             resultado.ExperienciaCuenta = expCuentaNueva;
 
-            // BotÃ­n sembrado solo al ganar
+            // BotÃƒÂ­n sembrado solo al ganar
             var botinGanado = resultado.Victoria
-                ? ReglasProgresion.TirarBotin(cfgProg.Botin, semilla)
+                ? ReglasProgresion.TirarBotin(campanaEvento.BotinConEvento(cfgProg.Botin), semilla)
                 : new List<PremioBotin>();
             resultado.Botin = botinGanado;
 
@@ -347,8 +351,8 @@ namespace Tienda
             resultado.TrofeosCambio = cambioTrofeos;
             resultado.SaldoResultante = estado.Saldos.De("ORO");
             resultado.Mensaje = resultado.Victoria
-                ? $"Victoria contra Â«{nombreRival}Â» en {resultado.TurnosJugados} turnos: +{premioGanado} {premioMoneda} Â· +{xpGanada} XP."
-                : $"Derrota contra Â«{nombreRival}Â» en {resultado.TurnosJugados} turnos: +{xpGanada} XP.";
+                ? $"Victoria contra Ã‚Â«{nombreRival}Ã‚Â» en {resultado.TurnosJugados} turnos: +{premioGanado} {premioMoneda} Ã‚Â· +{xpGanada} XP."
+                : $"Derrota contra Ã‚Â«{nombreRival}Ã‚Â» en {resultado.TurnosJugados} turnos: +{xpGanada} XP.";
 
             estado.Operaciones.ids.Add(idOperacion);
             estado.UltimoCombate = new UltimoCombate
@@ -391,7 +395,7 @@ namespace Tienda
             var estado = await ModuloTienda.LeerEstadoCompletoAsync(context, gameApiClient, context.PlayerId);
             var ultimo = estado.UltimoCombate;
             if (ultimo == null || ultimo.equipoPropio.Count == 0)
-                return Rechazo("No tienes ningÃºn combate previo registrado para repetir.");
+                return Rechazo("No tienes ningÃƒÂºn combate previo registrado para repetir.");
 
             var resultado = Simular(ultimo.equipoPropio, ultimo.equipoRival, ultimo.semilla);
             resultado.Exito = true;
@@ -399,7 +403,7 @@ namespace Tienda
             resultado.Rival = ultimo.rival;
             resultado.XpGanada = ultimo.xpGanada;
             resultado.Botin = ultimo.botin ?? new List<PremioBotin>();
-            resultado.Mensaje = "RepeticiÃ³n determinista del Ãºltimo combate (sin premio ni escritura).";
+            resultado.Mensaje = "RepeticiÃƒÂ³n determinista del ÃƒÂºltimo combate (sin premio ni escritura).";
             return resultado;
         }
 
@@ -597,7 +601,7 @@ namespace Tienda
                 new RivalNpc { Id = "bandidos", Nombre = "Bandidos del camino", Equipo = new List<string> { "HEROE_ARQUERA" }, PremioMoneda = "ORO", PremioCantidad = 150, Trofeos = 5 },
                 new RivalNpc { Id = "cazadores", Nombre = "Cazadores furtivos", Equipo = new List<string> { "HEROE_GUERRERO", "HEROE_ARQUERA" }, PremioMoneda = "ORO", PremioCantidad = 300, Trofeos = 8 },
                 new RivalNpc { Id = "guardia_real", Nombre = "Guardia real", Equipo = new List<string> { "HEROE_GUERRERO", "HEROE_MAGO", "HEROE_ARQUERA" }, PremioMoneda = "ORO", PremioCantidad = 600, Trofeos = 10 },
-                new RivalNpc { Id = "pvp", Nombre = "Duelo PvP AsÃ­ncrono", Equipo = new List<string>(), PremioMoneda = "ORO", PremioCantidad = 200, Trofeos = 10 }
+                new RivalNpc { Id = "pvp", Nombre = "Duelo PvP AsÃƒÂ­ncrono", Equipo = new List<string>(), PremioMoneda = "ORO", PremioCantidad = 200, Trofeos = 10 }
             }
         };
 
@@ -620,7 +624,7 @@ namespace Tienda
                 new NodoProgresion { Id = "TALENTO_ATAQUE_1", Nombre = "Ataque I", NivelCuentaMinimo = 1, CuestaMoneda = "ORO", CuestaCantidad = 100, Requiere = new List<string>() },
                 new NodoProgresion { Id = "TALENTO_ATAQUE_2", Nombre = "Ataque II", NivelCuentaMinimo = 2, CuestaMoneda = "ORO", CuestaCantidad = 300, Requiere = new List<string> { "TALENTO_ATAQUE_1" } },
                 new NodoProgresion { Id = "TALENTO_DEFENSA_1", Nombre = "Defensa I", NivelCuentaMinimo = 1, CuestaMoneda = "ORO", CuestaCantidad = 100, Requiere = new List<string>() },
-                new NodoProgresion { Id = "TALENTO_MAESTRIA", Nombre = "MaestrÃ­a", NivelCuentaMinimo = 3, CuestaMoneda = "ORO", CuestaCantidad = 500, Requiere = new List<string> { "TALENTO_ATAQUE_2", "TALENTO_DEFENSA_1" } }
+                new NodoProgresion { Id = "TALENTO_MAESTRIA", Nombre = "MaestrÃƒÂ­a", NivelCuentaMinimo = 3, CuestaMoneda = "ORO", CuestaCantidad = 500, Requiere = new List<string> { "TALENTO_ATAQUE_2", "TALENTO_DEFENSA_1" } }
             }
         };
     }
