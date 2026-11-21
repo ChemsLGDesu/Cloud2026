@@ -127,25 +127,58 @@ namespace Tienda
 
         private async Task<Catalogo> LeerCatalogoAsync(IExecutionContext context, IGameApiClient gameApiClient)
         {
-            var response = await gameApiClient.RemoteConfigSettings.AssignSettingsGetAsync(
-                context, context.AccessToken, context.ProjectId, context.EnvironmentId,
-                "settings", new List<string> { "catalogo_economia" }, null);
-
-            string catalogoJson = "{\"compras\":[{\"id\":\"COMPRA_GUERRERO\",\"cuestaMoneda\":\"ORO\",\"cuestaCantidad\":500,\"entregaItem\":\"HEROE_GUERRERO\"},{\"id\":\"COMPRA_ARQUERA\",\"cuestaMoneda\":\"ORO\",\"cuestaCantidad\":800,\"entregaItem\":\"HEROE_ARQUERA\"},{\"id\":\"COMPRA_MAGO\",\"cuestaMoneda\":\"ORO\",\"cuestaCantidad\":1200,\"entregaItem\":\"HEROE_MAGO\"}]}";
-
-            if (response.Data?.Configs != null)
+            var defaultCatalogo = new Catalogo
             {
-                JsonNode configsNode = JsonNode.Parse(JsonSerializer.Serialize(response.Data.Configs));
-                var settingsNode = configsNode?["settings"] ?? configsNode?["Settings"];
-                var catNode = settingsNode?["catalogo_economia"];
-                if (catNode != null)
+                Compras = new List<ItemCompra>
                 {
-                    string str = catNode is JsonValue ? catNode.ToString() : catNode.ToJsonString();
-                    if (!string.IsNullOrWhiteSpace(str)) catalogoJson = str;
+                    new ItemCompra { Id = "COMPRA_GUERRERO", CuestaMoneda = "ORO", CuestaCantidad = 500, EntregaItem = "HEROE_GUERRERO" },
+                    new ItemCompra { Id = "COMPRA_ARQUERA", CuestaMoneda = "ORO", CuestaCantidad = 800, EntregaItem = "HEROE_ARQUERA" },
+                    new ItemCompra { Id = "COMPRA_MAGO", CuestaMoneda = "ORO", CuestaCantidad = 1200, EntregaItem = "HEROE_MAGO" }
+                }
+            };
+
+            try
+            {
+                var response = await gameApiClient.RemoteConfigSettings.AssignSettingsGetAsync(
+                    context, context.AccessToken, context.ProjectId, context.EnvironmentId,
+                    "settings", new List<string> { "catalogo_economia" }, null);
+
+                if (response.Data?.Configs != null)
+                {
+                    JsonNode configsNode = JsonNode.Parse(JsonSerializer.Serialize(response.Data.Configs));
+                    var settingsNode = configsNode?["settings"] ?? configsNode?["Settings"];
+                    var catNode = settingsNode?["catalogo_economia"];
+                    if (catNode != null)
+                    {
+                        string str = catNode is JsonValue ? catNode.ToString() : catNode.ToJsonString();
+                        var root = JsonNode.Parse(str);
+                        var arr = root?["compras"]?.AsArray();
+                        if (arr != null && arr.Count > 0)
+                        {
+                            var lista = new List<ItemCompra>();
+                            foreach (var el in arr)
+                            {
+                                if (el is JsonObject obj)
+                                {
+                                    string id = obj["id"]?.ToString() ?? "";
+                                    string moneda = obj["cuestaMoneda"]?.ToString() ?? obj["moneda"]?.ToString() ?? "ORO";
+                                    int cant = obj["cuestaCantidad"]?.GetValue<int>() ?? obj["precio"]?.GetValue<int>() ?? 0;
+                                    string entrega = obj["entregaItem"]?.ToString() ?? obj["item"]?.ToString() ?? id.Replace("COMPRA_", "HEROE_");
+                                    if (!string.IsNullOrEmpty(id))
+                                        lista.Add(new ItemCompra { Id = id, CuestaMoneda = moneda, CuestaCantidad = cant, EntregaItem = entrega });
+                                }
+                            }
+                            if (lista.Count > 0) return new Catalogo { Compras = lista };
+                        }
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Usando catálogo por defecto: {ex.Message}");
+            }
 
-            return JsonSerializer.Deserialize<Catalogo>(catalogoJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return defaultCatalogo;
         }
 
         public static async Task<EstadoCompleto> LeerEstadoCompletoAsync(IExecutionContext context, IGameApiClient gameApiClient, string playerId)
@@ -263,7 +296,7 @@ namespace Tienda
             var playerId = context.PlayerId;
             var catalogo = await LeerCatalogoAsync(context, gameApiClient);
             var compra = catalogo.Compras.FirstOrDefault(c => c.Id == idCompra);
-            if (compra == null) return Rechazo($"El item {idCompra} no existe en el catálogo.");
+            if (compra == null) return Rechazo($"El item {idCompra} no existe en el catÃ¡logo.");
 
             var estado = await LeerEstadoCompletoAsync(context, gameApiClient, playerId);
 

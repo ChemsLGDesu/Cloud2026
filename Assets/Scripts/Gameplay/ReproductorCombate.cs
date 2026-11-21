@@ -64,6 +64,7 @@ public class ResultadoCombateDto
     public string Rival;
     public List<UnidadCombateDto> EquipoPropio;
     public List<UnidadCombateDto> EquipoRival;
+    public List<int> VidaFinalPropio;
     public List<EntradaBattleLogDto> BattleLog;
     public RecompensaCombateDto Recompensa;
     public int TrofeosCambio;
