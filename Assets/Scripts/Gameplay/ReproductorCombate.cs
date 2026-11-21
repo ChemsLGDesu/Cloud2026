@@ -34,11 +34,30 @@ public class RecompensaCombateDto
 }
 
 [Serializable]
+public class SubidaNivelHeroeDto
+{
+    public string id;
+    public int nivelAnterior;
+    public int nivelNuevo;
+    public int experienciaActual;
+}
+
+[Serializable]
+public class PremioBotinDto
+{
+    public string id;
+    public string tipo;
+    public int cantidad;
+    public int peso;
+}
+
+[Serializable]
 public class ResultadoCombateDto
 {
     public bool Exito;
     public string Mensaje;
     public bool Repeticion;
+    public bool Repetida;
     public bool Victoria;
     public int TurnosJugados;
     public int Semilla;
@@ -49,6 +68,11 @@ public class ResultadoCombateDto
     public RecompensaCombateDto Recompensa;
     public int TrofeosCambio;
     public int SaldoResultante;
+    public int XpGanada;
+    public int NivelCuenta;
+    public int ExperienciaCuenta;
+    public List<SubidaNivelHeroeDto> Subieron;
+    public List<PremioBotinDto> Botin;
 }
 
 public class ReproductorCombate : MonoBehaviour
@@ -56,27 +80,41 @@ public class ReproductorCombate : MonoBehaviour
     public event Action<EntradaBattleLogDto> AccionReproducida;
     public event Action<ResultadoCombateDto> CombateTerminado;
 
-    public async Task<ResultadoCombateDto> PelearAsync(IList<string> equipo, string idRival)
+    public ResultadoCombateDto UltimoResultado { get; private set; }
+
+    public static string NuevaOperacion() => Guid.NewGuid().ToString();
+
+    public async Task<ResultadoCombateDto> PelearAsync(IList<string> equipo, string idRival, string idOperacion = null)
     {
+        if (string.IsNullOrWhiteSpace(idOperacion))
+            idOperacion = NuevaOperacion();
+
         var args = new Dictionary<string, object>
         {
             { "equipo", equipo },
-            { "idRival", idRival }
+            { "idRival", idRival },
+            { "idOperacion", idOperacion }
         };
 
-        return await CloudCodeService.Instance.CallModuleEndpointAsync<ResultadoCombateDto>(
+        var res = await CloudCodeService.Instance.CallModuleEndpointAsync<ResultadoCombateDto>(
             "Tienda", "ResolverCombate", args);
+
+        if (res != null && res.Exito && !res.Repetida)
+            UltimoResultado = res;
+
+        return res;
     }
 
     public async Task<ResultadoCombateDto> RepetirAsync()
     {
-        return await CloudCodeService.Instance.CallModuleEndpointAsync<ResultadoCombateDto>(
+        var res = await CloudCodeService.Instance.CallModuleEndpointAsync<ResultadoCombateDto>(
             "Tienda", "RepetirCombate", new Dictionary<string, object>());
+        return res;
     }
 
-    public IEnumerator Reproducir(ResultadoCombateDto resultado, float intervaloSegundos = 0.6f)
+    public IEnumerator Reproducir(ResultadoCombateDto resultado, float intervaloSegundos = 0.5f)
     {
-        if (resultado == null || !resultado.Exito || resultado.BattleLog == null)
+        if (resultado == null || resultado.BattleLog == null)
             yield break;
 
         foreach (var entrada in resultado.BattleLog)
@@ -90,21 +128,18 @@ public class ReproductorCombate : MonoBehaviour
 
     public static bool MismoBattleLog(ResultadoCombateDto a, ResultadoCombateDto b)
     {
-        if (a?.BattleLog == null || b?.BattleLog == null) return false;
-        if (a.BattleLog.Count != b.BattleLog.Count) return false;
+        if (a == null || b == null || a.BattleLog == null || b.BattleLog == null)
+            return false;
+        if (a.BattleLog.Count != b.BattleLog.Count)
+            return false;
 
         for (int i = 0; i < a.BattleLog.Count; i++)
         {
             var x = a.BattleLog[i];
             var y = b.BattleLog[i];
-            if (x.turno != y.turno ||
-                x.atacante != y.atacante ||
-                x.objetivo != y.objetivo ||
-                x.dano != y.dano ||
-                x.vidaRestante != y.vidaRestante)
-            {
+            if (x.turno != y.turno || x.atacante != y.atacante || x.objetivo != y.objetivo ||
+                x.dano != y.dano || x.vidaRestante != y.vidaRestante)
                 return false;
-            }
         }
         return true;
     }

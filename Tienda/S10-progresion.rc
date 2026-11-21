@@ -1,0 +1,61 @@
+{
+  "$schema": "https://ugs-config-schemas.unity3d.com/v1/remote-config.schema.json",
+  "entries": {
+    "progresion": {
+      "experiencia": {
+        "victoria": 50,
+        "derrota": 15,
+        "porTurno": 1,
+        "topeTurnos": 20,
+        "caidosGanan": false
+      },
+      "niveles": {
+        "maximo": 10,
+        "costoBase": 100,
+        "bonoPorNivel": 0.05
+      },
+      "botin": {
+        "tiradas": 1,
+        "premios": [
+          { "id": "NADA", "tipo": "nada", "cantidad": 0, "peso": 40 },
+          { "id": "CAJA_BASICA", "tipo": "objeto", "cantidad": 1, "peso": 40 },
+          { "id": "GEMAS", "tipo": "moneda", "cantidad": 20, "peso": 20 }
+        ]
+      },
+      "nodos": [
+        {
+          "id": "TALENTO_ATAQUE_1",
+          "nombre": "Ataque I",
+          "nivelCuentaMinimo": 1,
+          "cuestaMoneda": "ORO",
+          "cuestaCantidad": 100,
+          "requiere": []
+        },
+        {
+          "id": "TALENTO_ATAQUE_2",
+          "nombre": "Ataque II",
+          "nivelCuentaMinimo": 2,
+          "cuestaMoneda": "ORO",
+          "cuestaCantidad": 300,
+          "requiere": [ "TALENTO_ATAQUE_1" ]
+        },
+        {
+          "id": "TALENTO_DEFENSA_1",
+          "nombre": "Defensa I",
+          "nivelCuentaMinimo": 1,
+          "cuestaMoneda": "ORO",
+          "cuestaCantidad": 100,
+          "requiere": []
+        },
+        {
+          "id": "TALENTO_MAESTRIA",
+          "nombre": "Maestría",
+          "nivelCuentaMinimo": 3,
+          "cuestaMoneda": "ORO",
+          "cuestaCantidad": 500,
+          "requiere": [ "TALENTO_ATAQUE_2", "TALENTO_DEFENSA_1" ]
+        }
+      ]
+    }
+  }
+}

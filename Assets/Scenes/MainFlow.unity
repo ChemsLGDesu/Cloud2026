@@ -9472,6 +9472,8 @@ GameObject:
   - component: {fileID: 1552273081}
   - component: {fileID: 1552273084}
   - component: {fileID: 1552273083}
+  - component: {fileID: 1552273086}
+  - component: {fileID: 1552273085}
   m_Layer: 0
   m_Name: Laboratorios_Tester
   m_TagString: Untagged
@@ -9526,7 +9528,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1552273079}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7f58886955a8c94c86c41c5af82ab47, type: 3}
   m_Name: 
@@ -9545,6 +9547,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8407f510cfe73ad4793d38caa70042a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Cloud2026.Runtime::RivalesCliente
+--- !u!114 &1552273085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552273079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c3a3cb3142307346b3955ce3a82f688, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cloud2026.Runtime::VerificadorLab10
+  progresion: {fileID: 0}
+  reproductor: {fileID: 0}
+--- !u!114 &1552273086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552273079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0caa55c730046a64e82d33909962ba06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cloud2026.Runtime::ProgresionCliente
 --- !u!1 &1585593300
 GameObject:
   m_ObjectHideFlags: 0
