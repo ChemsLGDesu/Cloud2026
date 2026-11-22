@@ -22,3 +22,5 @@ public class TiendaTests
         Assert.That(r.kit, Is.EqualTo("dvsc-20261105"));
     }
 }
+
+

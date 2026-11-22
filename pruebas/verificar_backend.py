@@ -31,7 +31,7 @@ def main():
         print(f"Error autenticando jugador de prueba: HTTP {status}")
         sys.exit(1)
 
-    token = auth["sessionToken"]
+    token = auth["idToken"]
     headers = {
         "Authorization": f"Bearer {token}",
         "UnityEnvironment": args.environment,

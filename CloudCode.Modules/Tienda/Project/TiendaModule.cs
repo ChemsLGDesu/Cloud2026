@@ -42,7 +42,7 @@ public class TiendaModule
     [CloudCodeFunction("HoraDelServidor")]
     public Task<RespuestaHora> HoraDelServidor(IExecutionContext ctx)
     {
-        try
+                        try
         {
             string envName = string.IsNullOrWhiteSpace(ctx.EnvironmentName) ? "development" : ctx.EnvironmentName;
             return Task.FromResult(new RespuestaHora
@@ -197,3 +197,5 @@ public class TiendaModule
         }
     }
 }
+
+

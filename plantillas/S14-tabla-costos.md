@@ -1,5 +1,6 @@
 ﻿# Laboratorio 14 — Análisis de Consumo y Proyección de Costos (UGS)
 
+- **Alumno:** James Deyvi Goñe Lozano
 - **Fecha de consulta de tarifas:** 2026-11-22
 - **Fuente oficial:** https://unity.com/products/gaming-services/pricing
 
@@ -14,40 +15,43 @@
 | **Authentication** | Ilimitado (incluido) | N/A | $0.00 |
 | **Leaderboards** | Incluido (promocional) | N/A | $0.00 |
 
-## 2. Desglose por operación y modelo por sesión ($p$ combates)
+## 2. Modelo matemático por sesión ($p$ combates)
 
-Fórmulas base para un jugador recurrente con $p$ combates por sesión (separando jugadores nuevos que ejecutan una única inicialización):
-- **Invocaciones Cloud Code:** $2 + p$ (incluye `LeerEstado`, `BuscarRival` y $p$ combates; $+1$ si compra héroe).
+Separando jugadores recurrentes de jugadores nuevos (la inicialización en `LeerEstado` añade 2 escrituras de Cloud Save una sola vez por cuenta) y sin mezclar unidades de cobro entre servicios:
+- **Invocaciones Cloud Code:** $2 + p$ (`LeerEstado` + `BuscarRival` + $p$ combates; $+1$ si hay compra en `Tienda` y $+1$ por `VistaTemporada`).
 - **Lecturas Cloud Save:** $2\text{ (LeerEstado)} + 2\text{ (BuscarRival)} + 2p\text{ (control\_estado + estado)}$.
 - **Lecturas Remote Config:** $1 + 2p$.
-- **Escrituras Cloud Save:** $p\text{ (lote Protected)}$ ($+1$ si realiza compra; $+2$ únicas si es jugador nuevo).
+- **Escrituras Cloud Save (Protected):** $p$ ($+1$ por cada `ComprarHeroe`; $+2$ únicas en el primer acceso).
 - **Publicaciones al Ranking:** $p$.
 
 ## 3. Medición real de sesión declarada (`development`, $p = 3$ combates)
 
-| Momento de juego | Endpoint / Acción | Invocaciones | Lecturas CS | Lecturas RC | Escrituras CS | Ranking | Duración cliente (ms) | `duracionMs` servidor |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| Inicio de sesión (nuevo) | `LeerEstado` (1.ª vez) | 1 | 2 | 1 | 2 | 0 | — | — |
-| Compra de héroe | `ComprarHeroe` (`guerrero`) | 1 | 2 | 2 | 1 | 0 | — | — |
-| Búsqueda de rival | `BuscarRival` | 1 | 2 | 0 | 0 | 0 | — | — |
-| Combate 1 | `ResolverCombate` | 1 | 2 | 2 | 1 | 1 | — | — |
-| Combate 2 | `ResolverCombate` | 1 | 2 | 2 | 1 | 1 | — | — |
-| Combate 3 | `ResolverCombate` | 1 | 2 | 2 | 1 | 1 | — | — |
-| Vista de temporada | `VistaTemporada` | 1 | 1 | 1 | 0 | 0 | — | — |
-| **Total sesión ($p=3$)** | **Sesión completa** | **7** | **13** | **10** | **6** | **3** | — | — |
+Mediciones ejecutadas el 2026-11-22 sobre el entorno `development` (`bce22f38-b39d-471d-b2c0-00d68642d667`):
+
+| Momento de juego | Función Cloud Code | Invocaciones | Lecturas CS | Lecturas RC | Escrituras CS | Ranking | Latencia cliente (ms) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| Inicio de sesión (1.ª vez) | `LeerEstado` | 1 | 2 | 1 | 2 | 0 | 452 ms |
+| Inicio de sesión (2.ª vez) | `LeerEstado` | 1 | 2 | 1 | 0 | 0 | 329 ms |
+| Compra de héroe | `ComprarHeroe` | 1 | 2 | 2 | 1 | 0 | 241 ms |
+| Búsqueda de rival | `BuscarRival` | 1 | 2 | 0 | 0 | 0 | 252 ms |
+| Combate 1 | `ResolverCombate` | 1 | 2 | 2 | 1 | 1 | 240 ms |
+| Combate 2 | `ResolverCombate` | 1 | 2 | 2 | 1 | 1 | 250 ms |
+| Combate 3 | `ResolverCombate` | 1 | 2 | 2 | 1 | 1 | 255 ms |
+| Vista de temporada | `VistaTemporada` | 1 | 1 | 1 | 0 | 0 | 283 ms |
+| **Total sesión recurrente ($p=3$)** | **Flujo completo** | **7** | **13** | **10** | **4** | **3** | **248.33 ms (media combate)** |
 
 ## 4. Proyección mensual (10,000 DAU · 2 sesiones/día · $p = 3$ combates)
 
-- **Sesiones mensuales:** $10,000 \times 2 \times 30 = 600,000\text{ sesiones/mes}$.
-- **Invocaciones Cloud Code:** $600,000 \times 6 = 3,600,000$ → excedente $2,600,000 \times (\$1.50 / 1,000,000) = \$3.90/\text{mes}$.
-- **Lecturas Cloud Save:** $600,000 \times 10 = 6,000,000$ → excedente $5,000,000 \times (\$0.009 / 10,000) = \$4.50/\text{mes}$.
-- **Escrituras Cloud Save:** $600,000 \times 3 = 1,800,000$ → excedente $800,000 \times (\$0.025 / 10,000) = \$2.00/\text{mes}$.
-- **Costo total estimado sin optimizar:** **$\$10.40/\text{mes}$** (más tiempo de cómputo dentro de las 20 h gratuitas).
+- **Volumen mensual:** $10,000 \times 2 \times 30 = 600,000\text{ sesiones/mes}$.
+- **Invocaciones Cloud Code:** $600,000 \times 7 = 4,200,000$ → excedente $3,200,000 \times (\$1.50 / 1,000,000) = \$4.80/\text{mes}$.
+- **Lecturas Cloud Save:** $600,000 \times 13 = 7,800,000$ → excedente $6,800,000 \times (\$0.009 / 10,000) = \$6.12/\text{mes}$.
+- **Escrituras Cloud Save:** $600,000 \times 4 = 2,400,000$ → excedente $1,400,000 \times (\$0.025 / 10,000) = \$3.50/\text{mes}$.
+- **Costo mensual estimado base:** **$\$14.42/\text{mes}$** (el tiempo de cómputo permanece dentro de las 20 horas gratuitas).
 
 ## 5. Dos optimizaciones propuestas y ahorro estimado
 
-1. **Caché en memoria con TTL corto (30 s) para Remote Config dentro del módulo C# y lectura combinada de claves:**
-   - **Impacto:** Elimina $2$ llamadas de red a Remote Config por cada combate (de $1 + 2p$ a $1$ lectura por instancia caliente), reduciendo la latencia `duracionMs` de `ResolverCombate` en ~35–50 ms por combate.
-   - **Regla de consistencia:** Nunca usar caché expirada para validar precios o recompensas; ante expiración del TTL, refrescar desde Remote Config antes de cobrar.
-2. **Consolidación de lectura inicial (`LeerEstado` + progresión de temporada en una sola invocación):**
-   - **Impacto:** Fusiona `LeerEstado` y `VistaTemporada` al arrancar, ahorrando $1$ invocación de Cloud Code y $1$ lectura de Cloud Save por sesión ($600,000$ invocaciones y $600,000$ lecturas menos al mes, equivalente a un ahorro directo de **$\$1.44/\text{mes}$** en excedentes de cuota).
+1. **Caché en memoria con TTL corto (30 s) para Remote Config y lectura por lote en el módulo C#:**
+   - **Ahorro técnico:** Reduce de $1 + 2p$ llamadas a Remote Config a una única lectura compartida por instancia caliente, recortando la latencia interna `duracionMs` de `ResolverCombate` en ~35–50 ms por combate.
+   - **Salvaguarda de integridad:** Nunca se usa una configuración expirada para cobrar precios ni otorgar recompensas; al vencer el TTL se consulta de nuevo Remote Config como fuente autoritativa.
+2. **Consolidación de carga inicial (`LeerEstado` + `VistaTemporada` en una sola petición):**
+   - **Ahorro económico:** Elimina $1$ invocación de Cloud Code y $1$ lectura de Cloud Save por sesión ($600,000$ invocaciones y $600,000$ lecturas menos al mes), reduciendo el gasto mensual en **$\$1.44/\text{mes}$** (bajando de $\$14.42$ a **$\$12.98/\text{mes}$**).

@@ -31,14 +31,19 @@ function Medir-Fase([string]$nombre, [scriptblock]$accion) {
     $tiempos[$nombre] = [math]::Round($sw.Elapsed.TotalSeconds, 1)
 }
 
-# Modo Reversión
 if (-not [string]::IsNullOrWhiteSpace($Revertir)) {
     $rutaZip = if ([System.IO.Path]::IsPathRooted($Revertir)) { $Revertir } else { Join-Path $PSScriptRoot $Revertir }
     if (-not (Test-Path $rutaZip)) { throw "No existe el respaldo: $rutaZip" }
     Write-Host "-- Revertir módulo Tienda en $Ambiente desde $rutaZip" -ForegroundColor Yellow
     Medir-Fase "Reversión de módulo" {
-        & ugs cloud-code modules import Tienda $rutaZip @proyecto
-        if ($LASTEXITCODE -ne 0) { throw "Falló la importación del respaldo (.ccmzip)." }
+        $nombreZip = [System.IO.Path]::GetFileName($rutaZip)
+        $tempModDir = Join-Path $raiz "Tienda"
+        New-Item -ItemType Directory -Force -Path $tempModDir | Out-Null
+        Copy-Item -Path $rutaZip -Destination (Join-Path $tempModDir $nombreZip) -Force
+        & ugs cloud-code modules import Tienda $nombreZip @proyecto
+        $code = $LASTEXITCODE
+        Remove-Item -Path (Join-Path $tempModDir $nombreZip) -Force -ErrorAction SilentlyContinue
+        if ($code -ne 0) { throw "Falló la importación del respaldo (.ccmzip)." }
     }
     Write-Host "Reversión completada en $($tiempos['Reversión de módulo']) s. Espera ~35 s para propagación." -ForegroundColor Green
     exit 0
@@ -49,28 +54,32 @@ if (-not (Test-Path $slnPath)) {
     throw "No se encontró la solución del módulo en: $slnPath"
 }
 
-# FASE 1: Pruebas locales
 Medir-Fase "Pruebas del backend" {
-    & dotnet test $slnPath --nologo -v quiet
+    & dotnet test $slnPath -m:1 --nologo -v quiet
     if ($LASTEXITCODE -ne 0) { throw "ABORTADO: Las pruebas unitarias fallaron. No se despliega." }
     Write-Host "-- Pruebas del backend           OK (superadas)" -ForegroundColor Green
 }
 
-# FASE 2: Respaldo del módulo publicado
 Medir-Fase "Respaldo del módulo actual" {
     $carpetaRespaldos = Join-Path $raiz "respaldos"
-    $antes = @(Get-ChildItem $carpetaRespaldos -Filter "*.ccmzip" -ErrorAction SilentlyContinue)
+    New-Item -ItemType Directory -Force -Path $carpetaRespaldos | Out-Null
     if ($Simular) {
         Write-Host "-- [SIMULAR] Exportaría respaldo en respaldos\" -ForegroundColor Cyan
     } else {
-        & ugs cloud-code modules export Tienda $carpetaRespaldos @proyecto 2>$null
-        $despues = @(Get-ChildItem $carpetaRespaldos -Filter "*.ccmzip" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)
-        $nombreZip = if ($despues.Count -gt 0) { $despues[0].Name } else { "sin-modulo-previo.ccmzip" }
+        $stamp = Get-Date -Format "yyyyMMdd-HHmm"
+        $nombreZip = "$Ambiente-$stamp.ccmzip"
+        & ugs cloud-code modules export Tienda $nombreZip @proyecto 2>$null
+        $exported = Join-Path $raiz "Tienda\$nombreZip"
+        if (Test-Path $exported) {
+            Move-Item $exported (Join-Path $carpetaRespaldos $nombreZip) -Force
+            
+        } else {
+            $nombreZip = "sin-modulo-previo.ccmzip"
+        }
         Write-Host "-- Respaldo del módulo actual    $nombreZip"
     }
 }
 
-# FASE 3: Configuración remota y leaderboards (ANTES que el módulo)
 $archivosConfig = @(
     "$raiz\plantillas\S05-economia.rc",
     "$raiz\plantillas\S06-tienda.rc",
@@ -92,12 +101,11 @@ Medir-Fase "Configuración y leaderboards" {
     }
 }
 
-# FASE 4: Compilación y despliegue del módulo Cloud Code
 Medir-Fase "Módulo de Cloud Code (Tienda)" {
     if ($Simular) {
         Write-Host "-- [SIMULAR] Compilaría y desplegaría $slnPath en $Ambiente" -ForegroundColor Cyan
     } else {
-        & dotnet build $slnPath -c Release --nologo -v quiet
+        & dotnet build $slnPath -c Release -m:1 --no-incremental --nologo -v quiet
         if ($LASTEXITCODE -ne 0) { throw "Error compilando Tienda.sln." }
         & ugs deploy $slnPath @proyecto
         if ($LASTEXITCODE -ne 0) { throw "Error desplegando módulo Tienda." }
@@ -107,29 +115,21 @@ Medir-Fase "Módulo de Cloud Code (Tienda)" {
 
 if ($Simular) {
     $cronometroTotal.Stop()
-    Write-Host "`nSimulación (-Simular) finalizada en $([math]::Round($cronometroTotal.Elapsed.TotalSeconds, 1)) s sin modificar la nube." -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Simulación (-Simular) finalizada en $([math]::Round($cronometroTotal.Elapsed.TotalSeconds, 1)) s sin modificar la nube." -ForegroundColor Green
     exit 0
 }
 
-# FASE 5: Espera de propagación + Verificación en vivo
 Medir-Fase "Espera de propagación" {
     Write-Host "-- Espera de propagación ($EsperaSegundos s)"
     Start-Sleep -Seconds $EsperaSegundos
 }
 
 Medir-Fase "Verificación de versión" {
-    $authResp = Invoke-RestMethod -Method Post `
-        -Uri "https://player-auth.services.api.unity.com/v1/authentication/anonymous" `
-        -Headers @{ "ProjectId" = $env:UGS_PROJECT_ID; "UnityEnvironment" = $Ambiente }
-    $token = $authResp.sessionToken
+    $authResp = Invoke-RestMethod -Method Post -Uri "https://player-auth.services.api.unity.com/v1/authentication/anonymous" -Headers @{ "ProjectId" = $env:UGS_PROJECT_ID; "UnityEnvironment" = $Ambiente }
+    $token = $authResp.idToken
 
-    $verResp = Invoke-RestMethod -Method Post `
-        -Uri "https://cloud-code.services.api.unity.com/v1/projects/$($env:UGS_PROJECT_ID)/modules/Tienda/HoraDelServidor" `
-        -Headers @{
-            "Authorization" = "Bearer $token"
-            "UnityEnvironment" = $Ambiente
-            "Content-Type" = "application/json"
-        } -Body "{}"
+    $verResp = Invoke-RestMethod -Method Post -Uri "https://cloud-code.services.api.unity.com/v1/projects/$($env:UGS_PROJECT_ID)/modules/Tienda/HoraDelServidor" -Headers @{ "Authorization" = "Bearer $token"; "UnityEnvironment" = $Ambiente; "Content-Type" = "application/json" } -Body "{}"
 
     $out = $verResp.output
     Write-Host "-- Verificación                  entorno $($out.entorno) · kit $($out.kit)"
