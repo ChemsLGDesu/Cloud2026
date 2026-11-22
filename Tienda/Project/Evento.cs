@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Unity.Services.CloudCode.Apis;
 using Unity.Services.CloudCode.Core;
 
@@ -89,6 +88,26 @@ namespace Tienda
 
         public static bool EsNuevo(int nivelCuenta) => nivelCuenta <= 1;
 
+        private static JObject DesenvolverObjeto(JToken token)
+        {
+            for (int i = 0; i < 4 && token != null; i++)
+            {
+                if (token is JObject jo) return jo;
+                if (token.Type == JTokenType.String)
+                {
+                    string s = token.Value<string>();
+                    if (string.IsNullOrWhiteSpace(s)) return null;
+                    try { token = JToken.Parse(s); continue; }
+                    catch { return null; }
+                }
+                break;
+            }
+            return token as JObject;
+        }
+
+        private static JToken Prop(JObject obj, string name) =>
+            obj?.GetValue(name, StringComparison.OrdinalIgnoreCase);
+
         public static async Task<(ConfigCampanaEvento campana, ConfigBonusBienvenida bonus)> LeerAsync(
             IGameApiClient api,
             IExecutionContext context,
@@ -97,11 +116,12 @@ namespace Tienda
         {
             var campana = new ConfigCampanaEvento();
             var bonus = new ConfigBonusBienvenida();
-            var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var keys = new List<string> { "campana_evento", "bonus_bienvenida" };
+            JObject settingsObj = null;
 
             try
             {
-                string url = $"https://config.unity3d.com/api/v1/settings?projectId={context.ProjectId}&environmentId={context.EnvironmentId}";
+                string url = $"https://config.unity3d.com/api/v1/projects/{context.ProjectId}/environments/{context.EnvironmentId}/settings";
                 var payload = new
                 {
                     userId = playerId,
@@ -114,49 +134,64 @@ namespace Tienda
                             ["nuevo"] = esNuevo ? "true" : "false"
                         }
                     },
-                    key = new[] { "campana_evento", "bonus_bienvenida" }
+                    key = keys
                 };
 
                 using var req = new HttpRequestMessage(HttpMethod.Post, url);
                 req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
-                req.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+                req.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
                 using var resp = await _http.SendAsync(req);
                 string body = await resp.Content.ReadAsStringAsync();
-
                 if (resp.IsSuccessStatusCode && !string.IsNullOrWhiteSpace(body))
                 {
-                    JsonNode root = JsonNode.Parse(body);
-                    var settingsNode = root?["configs"]?["settings"] ?? root?["Configs"]?["settings"];
-
-                    var evNode = settingsNode?["campana_evento"];
-                    if (evNode != null)
-                    {
-                        string rawEv = evNode is JsonValue ? evNode.ToString() : evNode.ToJsonString();
-                        var parsedEv = JsonSerializer.Deserialize<ConfigCampanaEvento>(rawEv, opts);
-                        if (parsedEv != null)
-                        {
-                            if (parsedEv.Activo && DateTime.TryParse(parsedEv.FinUtc, null,
-                                System.Globalization.DateTimeStyles.AdjustToUniversal, out DateTime fin))
-                            {
-                                if (DateTime.UtcNow >= fin)
-                                    parsedEv.Activo = false;
-                            }
-                            campana = parsedEv;
-                        }
-                    }
-
-                    var bonusNode = settingsNode?["bonus_bienvenida"];
-                    if (bonusNode != null)
-                    {
-                        string rawBonus = bonusNode is JsonValue ? bonusNode.ToString() : bonusNode.ToJsonString();
-                        var parsedBonus = JsonSerializer.Deserialize<ConfigBonusBienvenida>(rawBonus, opts);
-                        if (parsedBonus != null) bonus = parsedBonus;
-                    }
+                    var root = DesenvolverObjeto(JToken.Parse(body));
+                    var cfgs = DesenvolverObjeto(Prop(root, "configs"));
+                    settingsObj = DesenvolverObjeto(Prop(cfgs, "settings"));
                 }
             }
             catch
             {
+            }
+
+            if (settingsObj == null)
+            {
+                try
+                {
+                    var getResp = await api.RemoteConfigSettings.AssignSettingsGetAsync(
+                        context, context.AccessToken, context.ProjectId, context.EnvironmentId,
+                        "settings", keys, null);
+
+                    if (getResp.Data?.Configs != null)
+                    {
+                        string rawCfg = JsonConvert.SerializeObject(getResp.Data.Configs);
+                        var cfgs = DesenvolverObjeto(JToken.Parse(rawCfg));
+                        settingsObj = DesenvolverObjeto(Prop(cfgs, "settings"));
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            if (settingsObj != null)
+            {
+                var evObj = DesenvolverObjeto(Prop(settingsObj, "campana_evento"));
+                if (evObj != null)
+                {
+                    campana = evObj.ToObject<ConfigCampanaEvento>() ?? new ConfigCampanaEvento();
+                    if (campana.Activo && DateTime.TryParse(campana.FinUtc, null,
+                        DateTimeStyles.AdjustToUniversal, out DateTime fin) && DateTime.UtcNow >= fin)
+                    {
+                        campana.Activo = false;
+                    }
+                }
+
+                var bonusObj = DesenvolverObjeto(Prop(settingsObj, "bonus_bienvenida"));
+                if (bonusObj != null)
+                {
+                    bonus = bonusObj.ToObject<ConfigBonusBienvenida>() ?? new ConfigBonusBienvenida();
+                }
             }
 
             return (campana, bonus);
@@ -177,7 +212,7 @@ namespace Tienda
             DateTime ahora = DateTime.UtcNow;
             long segundos = 0;
             if (campana.Activo && DateTime.TryParse(campana.FinUtc, null,
-                System.Globalization.DateTimeStyles.AdjustToUniversal, out DateTime fin))
+                DateTimeStyles.AdjustToUniversal, out DateTime fin))
             {
                 segundos = Math.Max(0, (long)(fin - ahora).TotalSeconds);
             }
