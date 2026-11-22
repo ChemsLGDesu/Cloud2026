@@ -9478,6 +9478,7 @@ GameObject:
   - component: {fileID: 1552273087}
   - component: {fileID: 1552273090}
   - component: {fileID: 1552273089}
+  - component: {fileID: 1552273091}
   m_Layer: 0
   m_Name: Laboratorios_Tester
   m_TagString: Untagged
@@ -9611,7 +9612,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1552273079}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3150954bdf8d1a45b208319e5482fc9, type: 3}
   m_Name: 
@@ -9632,6 +9633,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Cloud2026.Runtime::EventoLiveOps
   segundosEntreConsultas: 15
+--- !u!114 &1552273091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552273079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2968f38748976489e857cc0b798ea9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cloud2026.Runtime::VerificadorLab13
+  telemetria: {fileID: 0}
+  economia: {fileID: 0}
+  reproductor: {fileID: 0}
+  ejecutarRecorridoClase: 1
 --- !u!1 &1585593300
 GameObject:
   m_ObjectHideFlags: 0

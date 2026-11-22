@@ -1,21 +1,30 @@
 {
-    "name": "Cloud2026.Editor",
-    "rootNamespace": "Cloud2026.EditorTools",
-    "references": [
-        "Cloud2026.Runtime",
-        "Unity.InputSystem",
-        "UnityEngine.UI",
-        "Unity.TextMeshPro"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "name":  "Cloud2026.Editor",
+    "rootNamespace":  "Cloud2026.EditorTools",
+    "references":  [
+                       "Cloud2026.Runtime",
+                       "Unity.InputSystem",
+                       "UnityEngine.UI",
+                       "Unity.TextMeshPro",
+                       "Unity.Services.Analytics"
+                   ],
+    "includePlatforms":  [
+                             "Editor"
+                         ],
+    "excludePlatforms":  [
+
+                         ],
+    "allowUnsafeCode":  false,
+    "overrideReferences":  false,
+    "precompiledReferences":  [
+
+                              ],
+    "autoReferenced":  true,
+    "defineConstraints":  [
+
+                          ],
+    "versionDefines":  [
+
+                       ],
+    "noEngineReferences":  false
 }

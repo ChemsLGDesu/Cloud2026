@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cloud2026.Services;
 using Unity.Services.CloudCode;
 using UnityEngine;
 
@@ -84,12 +85,35 @@ public class ReproductorCombate : MonoBehaviour
 
     public ResultadoCombateDto UltimoResultado { get; private set; }
 
+    private bool primerCombateRegistrado;
+
     public static string NuevaOperacion() => Guid.NewGuid().ToString();
+
+    public void ReiniciarSesionJugador() => primerCombateRegistrado = false;
+
+    public static int NivelDeRival(string idRival)
+    {
+        if (string.IsNullOrWhiteSpace(idRival)) return 1;
+        return idRival.Equals("guardia_real", StringComparison.OrdinalIgnoreCase) ? 2 : 1;
+    }
 
     public async Task<ResultadoCombateDto> PelearAsync(IList<string> equipo, string idRival, string idOperacion = null)
     {
         if (string.IsNullOrWhiteSpace(idOperacion))
             idOperacion = NuevaOperacion();
+
+        int nivelRival = NivelDeRival(idRival);
+
+        if (!primerCombateRegistrado)
+        {
+            primerCombateRegistrado = true;
+            Telemetria.Instance?.Registrar(Eventos.PrimerCombateIniciado);
+        }
+
+        Telemetria.Instance?.Registrar(Eventos.CombateIniciado, new Dictionary<string, object>
+        {
+            { "nivel_rival", nivelRival }
+        });
 
         var args = new Dictionary<string, object>
         {
@@ -102,7 +126,14 @@ public class ReproductorCombate : MonoBehaviour
             "Tienda", "ResolverCombate", args);
 
         if (res != null && res.Exito && !res.Repetida)
+        {
             UltimoResultado = res;
+            string heroeUsado = (res.EquipoPropio != null && res.EquipoPropio.Count > 0)
+                ? res.EquipoPropio[0].id
+                : (equipo != null && equipo.Count > 0 ? equipo[0] : "guerrero");
+
+            Telemetria.Instance?.RegistrarCombate(res.Victoria, heroeUsado, nivelRival, res.TurnosJugados);
+        }
 
         return res;
     }
