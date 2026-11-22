@@ -1,0 +1,12 @@
+﻿{
+  "$schema": "https://ugs-config-schemas.unity3d.com/v1/access-control.schema.json",
+  "statements": [
+    {
+      "sid": "denegar-escritura-directa-cliente-ranking",
+      "effect": "Deny",
+      "principal": "Player",
+      "action": ["Write"],
+      "resource": "urn:ugs:leaderboards:*:leaderboards/trofeos_dvsc/scores/*"
+    }
+  ]
+}

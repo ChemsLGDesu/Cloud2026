@@ -1,0 +1,8 @@
+﻿{
+  "$schema": "https://ugs-config-schemas.unity3d.com/v1/remote-config.schema.json",
+  "entries": {
+    "PRECIO_GUERRERO": 500,
+    "PRECIO_MAGO": 1200,
+    "PRECIO_COLOSO": 2500
+  }
+}
